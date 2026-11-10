@@ -7,6 +7,7 @@
   "homepage_url": "https://kuponstore.com",
   "action": {
     "default_title": "KuponStore Eklentisi",
+    "default_popup": "ui/fullscreen.html",
     "default_icon": {
       "16": "assets/icons/icon-16.png",
       "32": "assets/icons/icon-32.png",
