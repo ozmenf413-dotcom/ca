@@ -13170,4 +13170,10 @@ console.log("[KuponStore] R-Sig + EKS sistemi aktif");
 // setupTrendyolPaymentHeaderRules ile Bearer + lc / TrendyolGo başlık profili uygulanır.
 
 // YemekSepeti functions override (KuponStore-YS v1.2.14)
-importScripts("./ys-background.js");
+// Guarded: eğer tarayıcı (ör. Quetta/WebKit) bazı API'leri desteklemezse
+// YS modülü yüklenemese bile eklentinin açılması engellenmesin.
+try {
+  importScripts("./ys-background.js");
+} catch (e) {
+  console.error("[YS] ys-background.js yüklenemedi:", e);
+}

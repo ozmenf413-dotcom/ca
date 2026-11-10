@@ -7,7 +7,6 @@
   "homepage_url": "https://kuponstore.com",
   "action": {
     "default_title": "KuponStore Eklentisi",
-    "default_popup": "ui/fullscreen.html",
     "default_icon": {
       "16": "assets/icons/icon-16.png",
       "32": "assets/icons/icon-32.png",
@@ -31,13 +30,12 @@
     "scripting",
     "browsingData",
     "unlimitedStorage",
-    "notifications",
-    "downloads",
-    "management"
+    "notifications"
   ],
   "optional_permissions": [
     "clipboardWrite",
-    "declarativeNetRequestFeedback"
+    "declarativeNetRequestFeedback",
+    "management"
   ],
   "host_permissions": [
     "*://*.kuponstore.com/*",
@@ -267,11 +265,6 @@
       "world": "ISOLATED"
     }
   ],
-  "sandbox": {
-    "pages": [
-      "ui/maps.html"
-    ]
-  },
   "web_accessible_resources": [
     {
       "resources": [
@@ -289,21 +282,12 @@
         "pages/*"
       ],
       "matches": [
-        "<all_urls>"
+        "*://*/*"
       ]
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src *",
-    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com https://*.gstatic.com; child-src 'self'; object-src 'self'; connect-src *"
-  },
-  "externally_connectable": {
-    "matches": [
-      "https://*.kuponstore.com/*",
-      "https://kuponstore.com/*",
-      "http://localhost/*",
-      "https://localhost/*"
-    ]
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src *"
   },
   "minimum_chrome_version": "88",
   "incognito": "split",
