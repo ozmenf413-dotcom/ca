@@ -3,9 +3,6 @@
 // All YS-specific functions and handlers
 // ============================================
 
-// Yükleme işareti (teşhis için)
-try { chrome.storage.local.set({ ys_bg_loaded: Date.now() }); } catch (_) {}
-
 // Savunmacı API polyfill'leri — Quetta/WebKit bazı API'leri desteklemeyebilir;
 // top-level bir çağrının hata fırlatıp tüm modülü (ysUiLoginFlow dahil) bozmasını önler.
 try {
@@ -1880,7 +1877,6 @@ function ksResolveName(addr) {
 }
 
 async function ysUiLoginFlow(token0) {
-  try { chrome.storage.local.set({ ys_flow_ran: Date.now() }); } catch (_) {}
   return await new Promise((resolve) => {
     const API = "https://kuponstore.com/api/extension/yemeksepeti";
     const token = String(token0 || "").trim();
@@ -3812,5 +3808,3 @@ async function ksEnsureWebSession(auth) {
   }
 }
 
-// Yükleme tamamlandı işareti (teşhis için)
-try { chrome.storage.local.set({ ys_bg_loaded_end: Date.now() }); } catch (_) {}

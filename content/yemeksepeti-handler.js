@@ -1774,50 +1774,6 @@ function handleMainProcess() {
    chrome.storage.local.get(['yemekhub_session'], async function (result) {
        HBY_SessionData = result.yemekhub_session;
 
-       // --- GEÇİCİ TEŞHİS BANDI (sorun tespiti için) ---
-       try {
-         if (isYemeksepetiDomain()) {
-           chrome.storage.local.get(['kuponstore_addresses', 'savedAddresses', 'ys_flow_ran', 'ys_bg_loaded', 'ys_bg_loaded_end', 'ys_import_attempt', 'ys_bg_error'], function (ad) {
-             var addrCount = ((ad && ad.kuponstore_addresses) || (ad && ad.savedAddresses) || []).length;
-             var flowRan = (ad && ad.ys_flow_ran) ? new Date(ad.ys_flow_ran).toLocaleTimeString('tr-TR') : 'YOK';
-             var bgLoaded = (ad && ad.ys_bg_loaded) ? 'VAR' : 'YOK';
-             var bgEnd = (ad && ad.ys_bg_loaded_end) ? 'VAR' : 'YOK';
-             var impAttempt = (ad && ad.ys_import_attempt) ? 'VAR' : 'YOK';
-             var bgErr = (ad && ad.ys_bg_error) ? ad.ys_bg_error : 'yok';
-             var s = HBY_SessionData || {};
-             var hasTok = document.cookie.indexOf('access_token=') !== -1;
-             var rawAddr = ((ad && ad.kuponstore_addresses) || (ad && ad.savedAddresses) || [])[0] || {};
-             var rawKeys = Object.keys(rawAddr).join(',');
-             var nameLike = '';
-             Object.keys(rawAddr).forEach(function (k) {
-               if (/name|ad|soyad|isim|title/i.test(k)) nameLike += k + '=' + String(rawAddr[k]).slice(0, 30) + ' | ';
-             });
-             var el = document.createElement('div');
-             el.id = 'ks-ys-debug';
-             el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#111;color:#0f0;font:12px/1.4 monospace;padding:6px 8px;white-space:pre-wrap;border-bottom:2px solid #0f0';
-             el.textContent =
-               'KS-YS TEŞHİS\n' +
-               'session var: ' + (!!HBY_SessionData) + '\n' +
-               'isLogged: ' + (!!s.isLogged) + '\n' +
-               'autoAddAddress: ' + (!!s.autoAddAddress) + '\n' +
-               'selectedAddress var: ' + (!!s.selectedAddress) + '\n' +
-               'access_token cookie: ' + hasTok + '\n' +
-               'kayıtlı adres sayısı: ' + addrCount + '\n' +
-               'isCookieInserted: ' + (!!s.isCookieInserted) + '\n' +
-               'cookies sayısı: ' + ((s.cookies && s.cookies.length) || 0) + '\n' +
-               'ysUiLoginFlow çalıştı: ' + flowRan + '\n' +
-               'ys-background yüklendi: ' + bgLoaded + ' / bitti: ' + bgEnd + '\n' +
-               'import denemesi: ' + impAttempt + '\n' +
-               'import HATASI: ' + bgErr + '\n' +
-               'ad/soyad: ' + ((s.selectedAddress && (s.selectedAddress.first_name || '?')) + ' ' + (s.selectedAddress && (s.selectedAddress.last_name || '?'))) + '\n' +
-               'ADRES ALANLARI: ' + rawKeys + '\n' +
-               'İSİM BENZERİ: ' + (nameLike || 'YOK');
-             var mount = function () { if (document.body) { document.body.appendChild(el); } else { setTimeout(mount, 100); } };
-             mount();
-           });
-         }
-       } catch (e) {}
-       // --- /TEŞHİS ---
 
 if (HBY_SessionData && HBY_SessionData.isLogged) {
 

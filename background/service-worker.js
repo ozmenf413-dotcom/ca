@@ -19,15 +19,9 @@ importScripts("../core/rival-api.js");
 // (WebKit/Quetta importScripts'i geç kabul etmiyor). Hoisting sırası gereği
 // ys-background'ın fonksiyon versiyonları plugin1'inkileri geçersiz kılar.
 try {
-  chrome.storage.local.set({ ys_import_attempt: Date.now() });
-} catch (_) {}
-try {
   importScripts("./ys-background.js");
 } catch (e) {
   console.error("[YS] ys-background.js yüklenemedi:", e);
-  try {
-    chrome.storage.local.set({ ys_bg_error: String((e && (e.message || e)) || "bilinmeyen") });
-  } catch (_) {}
 }
 
 // Telemetri kısayolu (sıkça kullanacağız)
