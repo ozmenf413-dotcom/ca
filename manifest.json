@@ -1,0 +1,315 @@
+{
+  "manifest_version": 3,
+  "name": "KuponStore Eklentisi",
+  "version": "10.1.25",
+  "description": "KuponStore.com - Tüm platformlarda tek tıkla otomatik giriş",
+  "author": "KuponStore",
+  "homepage_url": "https://kuponstore.com",
+  "action": {
+    "default_title": "KuponStore Eklentisi",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "cookies",
+    "tabs",
+    "alarms",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "webRequest",
+    "webNavigation",
+    "scripting",
+    "browsingData",
+    "unlimitedStorage",
+    "notifications",
+    "downloads",
+    "management"
+  ],
+  "optional_permissions": [
+    "clipboardWrite",
+    "declarativeNetRequestFeedback"
+  ],
+  "host_permissions": [
+    "*://*.kuponstore.com/*",
+    "*://dosthesap.com/*",
+    "*://*.dosthesap.com/*",
+    "*://api.kuponstore.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "*://sunucu.kuponstore.com/*",
+    "http://76.13.151.27/*",
+    "*://*.migros.com.tr/*",
+    "*://rest.migros.com.tr/*",
+    "*://*.kuppo.net/*",
+    "*://*.bikupon.co/*",
+    "*://*.tgoyemek.com/*",
+    "*://tgoyemek.com/*",
+    "*://*.trendyol.com/*",
+    "*://trendyol.com/*",
+    "*://mobile.trendyol.com/*",
+    "*://api.tgoapis.com/*",
+    "*://*.tgoapis.com/*",
+    "https://payment.tgoapps.com/*",
+    "https://*.payment.tgoapps.com/*",
+    "http://payment.tgoapps.com/*",
+    "*://*.tgoapps.com/*",
+    "*://*.getir.com/*",
+    "*://client-api-gateway.getirapi.com/*",
+    "*://*.hepsiburada.com/*",
+    "*://customer-gw.hepsiburada.com/*",
+    "*://uber.com/*",
+    "*://*.uber.com/*",
+    "*://*.yemeksepeti.com/*",
+    "*://yemeksepeti.com/*",
+    "https://yemeksepeti.com/*",
+    "http://yemeksepeti.com/*",
+    "*://tr.fd-api.com/*",
+    "*://*.fd-api.com/*",
+    "*://cdn-net.com/*",
+    "*://*.cdn-net.com/*",
+    "*://cdn-path.com/*",
+    "*://*.cdn-path.com/*",
+    "*://*.googleapis.com/*",
+    "*://*.gstatic.com/*",
+    "*://nominatim.openstreetmap.org/*",
+    "*://*.coffy.com.tr/*",
+    "*://user-api-gw.coffy.com.tr/*",
+    "*://api.indirimerkezi.com.tr/*",
+    "https://*.tile.openstreetmap.org/*",
+    "https://tile.openstreetmap.org/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "analytics_blocker",
+        "enabled": true,
+        "path": "rules/analytics-blocker.json"
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.kuponstore.com/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "content/kuponstore-bridge.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "*://*.migros.com.tr/*"
+      ],
+      "js": [
+        "inject/migros-interceptor.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.migros.com.tr/*"
+      ],
+      "js": [
+        "content/migros-handler.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "*://*.tgoyemek.com/*",
+        "*://tgoyemek.com/*",
+        "*://*.trendyol.com/*",
+        "*://trendyol.com/*",
+        "*://*.tgoapps.com/*",
+        "*://tgoapps.com/*"
+      ],
+      "js": [
+        "inject/ty-session-watch.js",
+        "inject/console-redact.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.tgoyemek.com/*",
+        "*://tgoyemek.com/*",
+        "*://*.trendyol.com/*",
+        "*://trendyol.com/*"
+      ],
+      "js": [
+        "inject/trendyol-interceptor.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.tgoyemek.com/*",
+        "*://tgoyemek.com/*",
+        "*://*.trendyol.com/*",
+        "*://trendyol.com/*",
+        "*://*.tgoapps.com/*",
+        "*://tgoapps.com/*",
+        "https://payment.tgoapps.com/*",
+        "https://*.payment.tgoapps.com/*"
+      ],
+      "js": [
+        "inject/console-redact.js",
+        "content/ty-session-guard.js",
+        "content/trendyol-handler.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.tgoapps.com/*",
+        "*://tgoapps.com/*",
+        "https://payment.tgoapps.com/*",
+        "https://*.payment.tgoapps.com/*"
+      ],
+      "js": [
+        "inject/phone-privacy.js"
+      ],
+      "run_at": "document_idle",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.getir.com/*"
+      ],
+      "js": [
+        "content/getir-handler.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "*://*.yemeksepeti.com/*",
+        "https://www.yemeksepeti.com/*",
+        "https://yemeksepeti.com/*",
+        "http://*.yemeksepeti.com/*",
+        "https://tr.fd-api.com/*"
+      ],
+      "js": [
+        "content/yemeksepeti-handler.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://uber.com/*",
+        "*://*.uber.com/*",
+        "*://cdn-net.com/*",
+        "*://*.cdn-net.com/*",
+        "*://cdn-path.com/*",
+        "*://*.cdn-path.com/*"
+      ],
+      "js": [
+        "inject/ks-device-profiles.js",
+        "inject/uber-navigator-ios.js",
+        "inject/uber-interceptor-ios.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://uber.com/*",
+        "*://*.uber.com/*",
+        "*://cdn-net.com/*",
+        "*://*.cdn-net.com/*",
+        "*://cdn-path.com/*",
+        "*://*.cdn-path.com/*"
+      ],
+      "js": [
+        "content/uber-storage-bridge.js",
+        "content/uber-session-guard.js",
+        "content/uber-handler.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.hepsiburada.com/*"
+      ],
+      "js": [
+        "content/hepsiburada-handler.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    }
+  ],
+  "sandbox": {
+    "pages": [
+      "ui/maps.html"
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*",
+        "inject/*",
+        "ui/*",
+        "ui/coffy.html",
+        "ui/coffy.js",
+        "generate-rsig.js",
+        "crypto-js.min.js",
+        "src/core/endpoints.js",
+        "src/core/helpers.js",
+        "ui/ys-theme.css",
+        "assets/vendor/leaflet/*",
+        "pages/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src *",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com https://*.gstatic.com; child-src 'self'; object-src 'self'; connect-src *"
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://*.kuponstore.com/*",
+      "https://kuponstore.com/*",
+      "http://localhost/*",
+      "https://localhost/*"
+    ]
+  },
+  "minimum_chrome_version": "88",
+  "incognito": "split",
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  }
+}

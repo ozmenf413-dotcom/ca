@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#9333ea">
+    <meta name="format-detection" content="telephone=no">
+    <title>KuponStore — Hızlı Giriş</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/icon-32.png">
+    <link rel="apple-touch-icon" href="../assets/icons/favicon-180.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="address-modal.css">
+
+    <!-- Erken tema uygula (flash önleme) -->
+    <script src="theme-toggle.js"></script>
+</head>
+<body class="preload">
+    <div class="app-container">
+        <!-- Header: connection pill sol, theme switcher sağ -->
+        <header class="app-header">
+            <div class="connection-pill" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span class="connection-ip" id="connectionIP">IP: ...</span>
+            </div>
+            <div class="theme-switcher">
+                <button class="theme-toggle" id="themeToggleButton" title="Tema Değiştir" type="button">
+                    <span class="material-symbols-rounded" id="themeToggleIcon">light_mode</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="app-content">
+            <div class="search-container">
+                <!-- Logo & Greeting -->
+                <div class="search-logo">
+                    <img src="../assets/images/logo.png" alt="KuponStore" class="brand-logo-img" id="brandLogoImg">
+                    <div class="logo-text" id="logoText" style="display:none;">Kupon <span>Store</span></div>
+                    <!-- Greeting: JS bunu innerHTML ile dolduruyor + display'i açıyor -->
+                    <div class="user-greeting" id="greetingText" style="display:none;"></div>
+                </div>
+
+                <!-- Durum özeti kartları -->
+                <div class="status-summary" id="statusSummary">
+                    <div class="status-chip">
+                        <span class="sc-k"><span class="material-symbols-rounded">link</span>Hesap</span>
+                        <span class="sc-v" id="scAccount">—</span>
+                    </div>
+                    <div class="status-chip">
+                        <span class="sc-k"><span class="material-symbols-rounded">location_on</span>Adres</span>
+                        <span class="sc-v" id="scAddress">—</span>
+                    </div>
+                    <div class="status-chip">
+                        <span class="sc-k"><span class="material-symbols-rounded">schedule</span>Son giriş</span>
+                        <span class="sc-v" id="scLast">—</span>
+                    </div>
+                </div>
+
+                <!-- KuponStore Üyelik Bağlama Banner'ı -->
+                <div class="ks-link-banner" id="ksLinkBanner" style="display:none;">
+                    <div class="ks-link-banner-icon">
+                        <span class="material-symbols-rounded">link</span>
+                    </div>
+                    <div class="ks-link-banner-text">
+                        <div class="ks-link-banner-title">KuponStore hesabını bağla</div>
+                        <div class="ks-link-banner-sub">Eklentinin tüm özelliklerinden faydalan</div>
+                    </div>
+                    <button class="ks-link-banner-btn" id="ksLinkBannerBtn">
+                        <span>Üye Girişi</span>
+                        <span class="material-symbols-rounded" style="font-size:18px;">arrow_outward</span>
+                    </button>
+                </div>
+
+                <!-- Search box (token input + login button) -->
+                <div class="search-box">
+                    <div class="input-wrapper">
+                        <div class="input-icon-wrapper">
+                            <span class="material-symbols-rounded input-icon">vpn_key</span>
+                        </div>
+                        <input
+                            type="text"
+                            id="tokenInput"
+                            placeholder="Token yapıştırın..."
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                        <div class="clear-input-wrapper">
+                            <button class="clear-input" id="clearBtn" title="Temizle">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button id="loginBtn" aria-label="Giriş Yap" disabled>
+                        <span class="material-symbols-rounded">login</span>
+                    </button>
+                </div>
+
+                <!-- Platform göstergesi -->
+                <div class="platform-indicator" id="platformIndicator" style="display:none;">
+                    <span class="platform-icon" id="platformIcon"></span>
+                    <span class="platform-name" id="platformName"></span>
+                </div>
+
+                <!-- Aktif adres etiketi -->
+                <div id="activeAddressLabel" class="active-address-label" style="display:none;">
+                    <span class="material-symbols-rounded">location_on</span>
+                    <span class="active-address-text"></span>
+                </div>
+
+                <!-- Hızlı Erişim başlığı -->
+                <div class="section-label">
+                    <span class="material-symbols-rounded">bolt</span>
+                    <span>Hızlı Erişim</span>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="action-buttons">
+                    <button id="historyBtn" class="action-button">
+                        <span class="material-symbols-rounded">history</span>
+                        <span>Token Geçmişi</span>
+                    </button>
+                    <button id="addressBtn" class="action-button">
+                        <span class="material-symbols-rounded">location_on</span>
+                        <span>Adres Yönetimi</span>
+                    </button>
+                    <button id="settingsBtn" class="action-button">
+                        <span class="material-symbols-rounded">settings</span>
+                        <span>Ayarlar</span>
+                    </button>
+                    <a id="visitSiteButton" class="action-button" href="https://kuponstore.com" target="_blank">
+                        <span class="material-symbols-rounded">language</span>
+                        <span>Siteye Erişin</span>
+                    </a>
+                </div>
+
+                <!-- Log / Activity Section -->
+                <div class="log-section visible" id="logSection">
+                    <div class="log-header">
+                        <div class="log-title">
+                            <span class="material-symbols-rounded">receipt_long</span>
+                            <h3>İşlem Kayıtları</h3>
+                        </div>
+                        <div class="log-actions">
+                            <button id="clearLogBtn" class="reset-log-button" title="Logları Temizle">
+                                <span class="material-symbols-rounded">delete_sweep</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="log-container" id="logContainer">
+                        <div class="log-empty">
+                            <span class="material-symbols-rounded">receipt_long</span>
+                            <p>Henüz işlem kaydı yok</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <div class="app-footer">
+            <span class="material-symbols-rounded">verified</span>
+            KuponStore v10.1.20
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Token History Modal -->
+    <div class="modal" id="tokenHistoryModal" style="display:none;">
+        <div class="modal-overlay" id="tokenHistoryOverlay"></div>
+        <div class="modal-content modal-container">
+            <div class="modal-header" id="historyModalHeader">
+                <h2>
+                    <span class="material-symbols-rounded">history</span>
+                    Token Geçmişi
+                </h2>
+                <div class="modal-header-actions">
+                    <button class="modal-action-btn address-action-btn" id="clearHistoryBtn" title="Tümünü Temizle">
+                        <span class="material-symbols-rounded">delete_sweep</span>
+                        <span>Temizle</span>
+                    </button>
+                    <button class="close-modal modal-close-btn" id="closeTokenHistoryModal">
+                        <span class="material-symbols-rounded">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="tokenHistoryList" class="history-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal" style="display:none;">
+        <div class="modal-overlay" id="settingsOverlay"></div>
+        <div class="modal-content modal-container">
+            <div class="modal-header">
+                <h2>
+                    <span class="material-symbols-rounded">settings</span>
+                    Ayarlar
+                </h2>
+                <button class="close-modal modal-close-btn" id="closeSettingsModal">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Genel Ayarlar</h3>
+                    <div class="setting-item">
+                        <div class="setting-icon">
+                            <span class="material-symbols-rounded">flash_on</span>
+                        </div>
+                        <div class="setting-info">
+                            <span class="setting-title">Otomatik Giriş</span>
+                            <span class="setting-desc">Token yapıştırıldığında otomatik giriş yap</span>
+                        </div>
+                        <label class="setting-toggle">
+                            <input type="checkbox" id="autoLoginSetting">
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-icon">
+                            <span class="material-symbols-rounded">notifications</span>
+                        </div>
+                        <div class="setting-info">
+                            <span class="setting-title">Bildirimler</span>
+                            <span class="setting-desc">Giriş ve hata bildirimlerini göster</span>
+                        </div>
+                        <label class="setting-toggle">
+                            <input type="checkbox" id="notificationsSetting">
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-icon">
+                            <span class="material-symbols-rounded">shield</span>
+                        </div>
+                        <div class="setting-info">
+                            <span class="setting-title">Analytics Engelle</span>
+                            <span class="setting-desc">Takip scriptlerini ve analytics'i engelle</span>
+                        </div>
+                        <label class="setting-toggle">
+                            <input type="checkbox" id="blockAnalyticsSetting" checked>
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-icon">
+                            <span class="material-symbols-rounded">cleaning_services</span>
+                        </div>
+                        <div class="setting-info">
+                            <span class="setting-title">Girişte Önbellek Temizle</span>
+                            <span class="setting-desc">Token girişinde site verilerini otomatik temizle</span>
+                        </div>
+                        <label class="setting-toggle">
+                            <input type="checkbox" id="clearCacheSetting" checked>
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-icon">
+                            <span class="material-symbols-rounded">phone_iphone</span>
+                        </div>
+                        <div class="setting-info">
+                            <span class="setting-title">Uber: iOS / macOS Safari Modu</span>
+                            <span class="setting-desc">Uber için macOS Safari fingerprint + JA3 bypass</span>
+                        </div>
+                        <label class="setting-toggle">
+                            <input type="checkbox" id="uberIosModeSetting">
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Management Modal -->
+    <div class="modal" id="addressModal" style="display:none;">
+        <div class="modal-overlay" id="addressModalOverlay"></div>
+        <div class="modal-content modal-container address-modal-content address-modal">
+            <div class="modal-header" id="addressModalHeader">
+                <h2>
+                    <span class="material-symbols-rounded">location_on</span>
+                    Adres Yönetimi
+                </h2>
+                <div class="modal-header-actions address-modal-actions">
+                    <button class="modal-action-btn address-action-btn" id="exportAddressesBtn" title="Adresleri Dışa Aktar">
+                        <span class="material-symbols-rounded">download</span>
+                        <span>Dışa Aktar</span>
+                    </button>
+                    <button class="modal-action-btn address-action-btn" id="importAddressesBtn" title="Adresleri İçe Aktar">
+                        <span class="material-symbols-rounded">upload</span>
+                        <span>İçe Aktar</span>
+                    </button>
+                    <button class="close-modal modal-close-btn" id="closeAddressModal">
+                        <span class="material-symbols-rounded">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <!-- Saved Addresses -->
+                <div class="saved-addresses-section" id="savedAddressesSection">
+                    <div class="section-header">
+                        <h3>
+                            <span class="material-symbols-rounded">bookmarks</span>
+                            Kayıtlı Adreslerim
+                        </h3>
+                        <button class="new-address-btn new-address-button" id="newAddressBtn">
+                            <span class="material-symbols-rounded">add</span>
+                            Yeni Adres
+                        </button>
+                    </div>
+                    <div class="saved-addresses-list" id="savedAddressesList"></div>
+                </div>
+
+                <!-- Address Form -->
+                <div class="address-form-section" id="addressFormSection" style="display:none;">
+                    <div class="section-header">
+                        <h3 id="formTitle">
+                            <span class="material-symbols-rounded">edit_location</span>
+                            Yeni Adres Ekle
+                        </h3>
+                        <button class="back-btn back-to-list-button" id="backToListBtn">
+                            <span class="material-symbols-rounded">arrow_back</span>
+                            Listeye Dön
+                        </button>
+                    </div>
+
+                    <div class="address-search-section search-section">
+                        <div class="input-wrapper full-width search-input-wrapper">
+                            <div class="input-icon-wrapper">
+                                <span class="material-symbols-rounded input-icon">search</span>
+                            </div>
+                            <input type="text" id="addressSearchInput" placeholder="Adresinizi arayın... (örn: Kadıköy Moda)">
+                        </div>
+                        <div class="search-suggestions suggestions-container" id="searchSuggestions"></div>
+                    </div>
+
+                    <div class="map-section map-container" style="position:relative;">
+                        <div class="map-placeholder" id="mapPlaceholder">
+                            <span class="material-symbols-rounded map-placeholder-icon">explore</span>
+                            <span class="map-placeholder-text">Adres arayarak haritayı yükleyin</span>
+                            <span class="map-placeholder-hint">Yukarıdaki alana adresinizi yazın</span>
+                        </div>
+                        <iframe id="mapIframe" src="about:blank" style="width:100%;height:340px;border:none;border-radius:16px;display:block;" allowfullscreen></iframe>
+                    </div>
+
+                    <form class="address-form" id="addressForm">
+                        <input type="hidden" id="addressId" value="">
+
+                        <div class="form-group">
+                            <div class="input-group full-width">
+                                <label for="addressLabel">
+                                    <span class="material-symbols-rounded label-icon">label</span>
+                                    Adres Etiketi
+                                </label>
+                                <div class="label-selector address-label-selector">
+                                    <select id="addressLabelSelect">
+                                        <option value="home">🏠 Ev</option>
+                                        <option value="work">💼 İş Yeri</option>
+                                        <option value="other">📍 Diğer</option>
+                                    </select>
+                                    <input type="text" id="customAddressLabel" placeholder="Özel etiket..." style="display:none;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label for="province">
+                                    <span class="material-symbols-rounded label-icon">location_city</span>
+                                    İl
+                                </label>
+                                <select id="province" required>
+                                    <option value="">İl seçin</option>
+                                    <option>Adana</option><option>Adıyaman</option><option>Afyonkarahisar</option><option>Ağrı</option><option>Amasya</option>
+                                    <option>Ankara</option><option>Antalya</option><option>Artvin</option><option>Aydın</option><option>Balıkesir</option>
+                                    <option>Bilecik</option><option>Bingöl</option><option>Bitlis</option><option>Bolu</option><option>Burdur</option>
+                                    <option>Bursa</option><option>Çanakkale</option><option>Çankırı</option><option>Çorum</option><option>Denizli</option>
+                                    <option>Diyarbakır</option><option>Edirne</option><option>Elazığ</option><option>Erzincan</option><option>Erzurum</option>
+                                    <option>Eskişehir</option><option>Gaziantep</option><option>Giresun</option><option>Gümüşhane</option><option>Hakkari</option>
+                                    <option>Hatay</option><option>Isparta</option><option>Mersin</option><option>İstanbul</option><option>İzmir</option>
+                                    <option>Kars</option><option>Kastamonu</option><option>Kayseri</option><option>Kırklareli</option><option>Kırşehir</option>
+                                    <option>Kocaeli</option><option>Konya</option><option>Kütahya</option><option>Malatya</option><option>Manisa</option>
+                                    <option>Kahramanmaraş</option><option>Mardin</option><option>Muğla</option><option>Muş</option><option>Nevşehir</option>
+                                    <option>Niğde</option><option>Ordu</option><option>Rize</option><option>Sakarya</option><option>Samsun</option>
+                                    <option>Siirt</option><option>Sinop</option><option>Sivas</option><option>Tekirdağ</option><option>Tokat</option>
+                                    <option>Trabzon</option><option>Tunceli</option><option>Şanlıurfa</option><option>Uşak</option><option>Van</option>
+                                    <option>Yozgat</option><option>Zonguldak</option><option>Aksaray</option><option>Bayburt</option><option>Karaman</option>
+                                    <option>Kırıkkale</option><option>Batman</option><option>Şırnak</option><option>Bartın</option><option>Ardahan</option>
+                                    <option>Iğdır</option><option>Yalova</option><option>Karabük</option><option>Kilis</option><option>Osmaniye</option>
+                                    <option>Düzce</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="district">
+                                    <span class="material-symbols-rounded label-icon">apartment</span>
+                                    İlçe
+                                </label>
+                                <select id="district" disabled required>
+                                    <option value="">İlçe seçin</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label for="neighborhood">
+                                    <span class="material-symbols-rounded label-icon">home</span>
+                                    Mahalle
+                                </label>
+                                <select id="neighborhood" disabled required>
+                                    <option value="">Önce ilçe seçin</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="street">
+                                    <span class="material-symbols-rounded label-icon">signpost</span>
+                                    Cadde/Sokak
+                                </label>
+                                <input type="text" id="street" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label for="building">
+                                    <span class="material-symbols-rounded label-icon">domain</span>
+                                    Bina No
+                                </label>
+                                <input type="text" id="building">
+                            </div>
+                            <div class="input-group">
+                                <label for="floor">
+                                    <span class="material-symbols-rounded label-icon">layers</span>
+                                    Kat
+                                </label>
+                                <input type="text" id="floor">
+                            </div>
+                            <div class="input-group">
+                                <label for="apartment">
+                                    <span class="material-symbols-rounded label-icon">meeting_room</span>
+                                    Daire
+                                </label>
+                                <input type="text" id="apartment">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label for="postcode">
+                                    <span class="material-symbols-rounded label-icon">pin</span>
+                                    Posta Kodu
+                                </label>
+                                <input type="text" id="postcode">
+                            </div>
+                            <div class="input-group">
+                                <label for="phone">
+                                    <span class="material-symbols-rounded label-icon">phone</span>
+                                    Telefon
+                                </label>
+                                <input type="tel" id="phone" placeholder="5xx xxx xx xx" maxlength="10" pattern="[0-9]{10}" inputmode="numeric" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="description">
+                                <span class="material-symbols-rounded label-icon">description</span>
+                                Adres Tarifi
+                                <span style="font-weight:normal;color:var(--text-secondary);font-size:12px;margin-left:6px">(maks. 50 karakter)</span>
+                            </label>
+                            <textarea id="description" rows="2" maxlength="50" placeholder="Maks. 50 karakter"></textarea>
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px">
+                                <small style="color:var(--text-secondary);font-size:12px;line-height:1.4">
+                                    <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-2px;color:var(--primary-color)">info</span>
+                                    Telefon numaranıza girdiğiniz numara otomatik olarak adres tarifine eklenmektedir.
+                                </small>
+                                <small id="descriptionCounter" style="color:var(--text-tertiary);font-size:12px;white-space:nowrap">0/50</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group full-width">
+                                <label for="fullname">
+                                    <span class="material-symbols-rounded label-icon">person</span>
+                                    Ad Soyad
+                                </label>
+                                <input type="text" id="fullname" placeholder="Alıcı adı ve soyadı" required>
+                            </div>
+                        </div>
+
+                        <div class="form-toggles">
+                            <div class="toggle-item">
+                                <input type="checkbox" id="autoAddressSwitch" checked>
+                                <label for="autoAddressSwitch">
+                                    <span class="toggle-title">Otomatik Adres Ekle</span>
+                                    <span class="toggle-desc">Giriş yapıldıktan sonra bu adresi otomatik olarak hesaba ekle</span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <input type="checkbox" id="randomSpacesSwitch" checked>
+                                <label for="randomSpacesSwitch">
+                                    <span class="toggle-title">Rastgele Boşluklar Ekle</span>
+                                    <span class="toggle-desc">Adres engellerini aşmak için rastgele boşluklar ekler</span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <input type="checkbox" id="cleanAddressSwitch">
+                                <label for="cleanAddressSwitch">
+                                    <span class="toggle-title">Sade Adres Bilgileri</span>
+                                    <span class="toggle-desc">Adres alanlarına uyarı metinleri eklemez</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="delete-btn delete-button" id="deleteAddressBtn" style="display:none;">
+                                <span class="material-symbols-rounded">delete</span>
+                                Adresi Sil
+                            </button>
+                            <button type="submit" class="save-btn save-button" id="saveAddressBtn">
+                                <span class="material-symbols-rounded">save</span>
+                                Adresi Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="addressImportInput" accept=".json" style="display:none;">
+
+    <!-- Update Banner -->
+    <div class="update-banner" id="updateBanner" style="display:none;">
+        <div class="update-banner-icon">
+            <span class="material-symbols-rounded">system_update</span>
+        </div>
+        <div class="update-banner-content">
+            <strong>Güncelleme Mevcut</strong>
+            <span id="updateBannerMsg">Yeni sürüm kullanılabilir.</span>
+        </div>
+        <a class="update-banner-btn" id="updateBannerBtn" href="#" target="_blank">Güncelle</a>
+        <button class="update-banner-close" id="updateBannerClose">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    </div>
+
+    <!-- Mandatory Update Blocker -->
+    <div class="update-blocker" id="updateBlocker" style="display:none;">
+        <div class="update-blocker-card">
+            <div class="update-blocker-icon">
+                <span class="material-symbols-rounded">update</span>
+            </div>
+            <h2 class="update-blocker-title">Zorunlu Güncelleme</h2>
+            <p class="update-blocker-desc" id="updateBlockerMsg">Bu eklenti sürümü artık desteklenmiyor. Devam etmek için lütfen güncelleyin.</p>
+            <div class="update-blocker-version">
+                <span id="updateBlockerCurrent"></span>
+                <span class="material-symbols-rounded" style="font-size:18px;color:var(--primary-color)">arrow_forward</span>
+                <span id="updateBlockerLatest"></span>
+            </div>
+            <div class="update-blocker-changelog" id="updateBlockerChangelog"></div>
+            <a class="update-blocker-btn" id="updateBlockerBtn" href="#" target="_blank">
+                <span class="material-symbols-rounded">download</span>
+                Şimdi Güncelle
+            </a>
+            <button type="button" class="update-blocker-btn-secondary" id="updateBlockerExportBtn">
+                <span class="material-symbols-rounded">save_alt</span>
+                Mevcut Adresleri İndir
+            </button>
+            <p class="update-blocker-hint">
+                <span class="material-symbols-rounded">info</span>
+                Güncelleme öncesi kayıtlı adreslerinizi JSON olarak indirin.
+            </p>
+        </div>
+    </div>
+
+    <!-- Telegram Button -->
+    <a href="https://t.me/kuponstorecom" target="_blank" class="telegram-fab" title="Telegram Kanalımıza Katıl">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+        </svg>
+        <span>Telegram</span>
+    </a>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text" id="loadingText">İşlem yapılıyor...</p>
+    </div>
+
+    <!-- Login Warning Modal -->
+    <div class="modal" id="loginWarningModal">
+        <div class="modal-overlay" id="loginWarningOverlay"></div>
+        <div class="modal-content modal-container" style="max-width:420px;text-align:center;padding:32px 24px;">
+            <div style="margin-bottom:16px;">
+                <span class="material-symbols-rounded" style="font-size:52px;color:#FF5C5C;">warning</span>
+            </div>
+            <h2 style="font-size:18px;font-weight:800;color:#FF5C5C;margin-bottom:18px;letter-spacing:-0.02em;">
+                Dikkat! Tek Kullanımlık Giriş
+            </h2>
+            <div style="font-size:13.5px;line-height:1.7;color:var(--text-primary);margin-bottom:8px;text-align:left;background:var(--card-bg,rgba(255,255,255,0.04));padding:18px 20px;border-radius:16px;border:1px solid var(--border-color,rgba(255,255,255,0.08));">
+                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
+                    <span class="material-symbols-rounded" style="color:#FF5C5C;font-size:20px;flex-shrink:0;margin-top:1px;">cancel</span>
+                    <span>Bu hesaba <strong>yalnızca bir kez</strong> giriş yapabilirsiniz. Tekrar giriş hakkınız bulunmamaktadır.</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
+                    <span class="material-symbols-rounded" style="color:#FF5C5C;font-size:20px;flex-shrink:0;margin-top:1px;">cancel</span>
+                    <span>Hesaptan <strong>çıkış yaparsanız</strong>, hesabınız kalıcı olarak kapatılacaktır ve bir daha erişim sağlayamazsınız.</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                    <span class="material-symbols-rounded" style="color:#FF5C5C;font-size:20px;flex-shrink:0;margin-top:1px;">cancel</span>
+                    <span>Bu durumda <strong>iade talebiniz onaylanmayacaktır</strong>. Lütfen bu koşulları kabul ettiğinizden emin olun.</span>
+                </div>
+            </div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:22px;font-style:italic;">
+                Devam etmek için lütfen uyarıyı okuyun. Buton <span id="loginWarningCountdown" style="color:#FF5C5C;font-weight:800;">5</span> saniye sonra aktif olacak.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button id="loginWarningAccept" disabled style="width:100%;padding:14px 20px;font-size:15px;font-weight:700;border:none;border-radius:999px;cursor:not-allowed;opacity:0.4;font-family:inherit;background:linear-gradient(135deg,#9333ea,#6d28d9);color:#fff;transition:opacity 0.3s,cursor 0.3s;">
+                    <span id="loginWarningBtnText">Anladım ve Kabul Ediyorum (5)</span>
+                </button>
+                <button id="loginWarningCancel" disabled style="width:100%;padding:12px 20px;font-size:13px;font-weight:600;border:1px solid var(--border-color,rgba(255,255,255,0.1));border-radius:999px;cursor:not-allowed;opacity:0.4;font-family:inherit;background:transparent;color:var(--text-secondary);transition:opacity 0.3s,cursor 0.3s;">
+                    Vazgeç
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="login-warning.js"></script>
+    <script src="../core/config.js"></script>
+    <script src="address-modal.js"></script>
+    <script src="fullscreen.js"></script>
+</body>
+</html>

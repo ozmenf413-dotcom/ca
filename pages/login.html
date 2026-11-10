@@ -1,0 +1,2440 @@
+<!doctype html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta name="author" content="YemekTIME">
+    <title>YemekTime Token Giriş</title>
+    <script src="theme-boot.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicons -->
+    <link rel="icon" href="../assets/img/logo2.png" type="image/png">
+
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --success-color: #6BCB77;
+            --danger-color: #FF7171;
+            --dark-color: #292F36;
+            --light-color: #F7F7F7;
+            --warning-color: #FFD166;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        /* Otomatik Adres Ekleme Toggle Switch */
+        .form-check.form-switch {
+            padding-left: 2.5em;
+        }
+        
+        .form-check.form-switch .form-check-input {
+            width: 2.5em;
+            height: 1.25em;
+            cursor: pointer;
+            background-color: #dc3545;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .form-check.form-switch .form-check-input:checked {
+            background-color: #28a745;
+        }
+        
+        .form-check.form-switch .form-check-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        
+        .form-check-label {
+            margin-left: 0.5em;
+            font-weight: 500;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* SCROLL PROBLEMİ İÇİN KRİTİK DEĞİŞİKLİKLER */
+        html {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            transition: var(--transition);
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #f0f4fd 100%);
+            overflow-x: hidden;
+            overflow-y: auto; /* Scroll edilebilir */
+            position: relative; /* Fixed yerine relative */
+        }
+
+        /* Animated Border Container - Scroll için düzeltildi */
+        .animated-border-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        /* The animated border itself */
+        .animated-border {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: 0;
+            display: none; /* Mobilde animasyonu kapat */
+            pointer-events: none;
+            border-radius: 17px;
+        }
+
+        .animated-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(3px);
+            animation: glowing 20s linear infinite;
+            opacity: 0.8;
+            border-radius: 17px;
+        }
+
+        /* Animation for the border color movement */
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+
+            50% {
+                background-position: 400% 0;
+            }
+
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        /* Border traveler effect */
+        .border-traveler {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            filter: blur(3px);
+            animation: travel 6s linear infinite;
+            z-index: 2;
+            pointer-events: none;
+            display: none; /* Mobilde kapat */
+        }
+
+        @keyframes travel {
+            0% {
+                top: -50px;
+                left: -50px;
+            }
+            25% {
+                top: -50px;
+                left: calc(100% - 50px);
+            }
+            50% {
+                top: calc(100% - 50px);
+                left: calc(100% - 50px);
+            }
+            75% {
+                top: calc(100% - 50px);
+                left: -50px;
+            }
+            100% {
+                top: -50px;
+                left: -50px;
+            }
+        }
+
+        /* Container - Scroll için düzeltildi */
+        .container {
+            padding: 0;
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            overflow: visible; /* Scroll için visible */
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: none;
+            overflow: visible;
+            transition: var(--transition);
+            background-color: white;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            height: auto;
+            min-height: auto;
+        }
+        
+        .card-content-wrapper {
+            overflow: visible; /* Scroll kaldırıldı */
+            flex: 1;
+            padding-bottom: 20px;
+        }
+
+        .card::after {
+            display: none; /* Kaldırıldı, gerek yok */
+        }
+
+        .logo-container {
+            padding: 1rem 0 0.5rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .telegram-support-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #0088cc, #229ED9);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .telegram-support-btn:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .telegram-support-btn:active {
+            transform: scale(1.05);
+        }
+        
+        .ip-display-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+            text-align: center;
+            line-height: 1.3;
+        }
+        
+        .ip-display-badge .ip-label {
+            opacity: 0.9;
+            font-size: 10px;
+        }
+        
+        .ip-display-badge .ip-value {
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+        
+        .ip-display-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ip-display-badge i {
+            font-size: 14px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 0.4rem;
+            transition: var(--transition);
+            animation: pulseEffect 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 3px rgba(255, 107, 107, 0.7));
+        }
+
+        @keyframes pulseEffect {
+            0% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 3px rgba(255, 107, 107, 0.7));
+            }
+
+            50% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.9));
+            }
+
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 3px rgba(255, 107, 107, 0.7));
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        
+        @keyframes errorPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            }
+            50% { 
+                transform: scale(1.1); 
+                box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+            }
+        }
+        
+        @keyframes slideUpBounce {
+            0% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            60% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+            80% {
+                transform: translateY(5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--dark-color);
+            background: linear-gradient(to right, #FF6B6B, #FF8E53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientText 3s ease infinite;
+            background-size: 200% auto;
+        }
+
+        .slogan {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.6rem;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            border: none;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            min-height: 44px; /* Touch target size */
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            position: relative;
+        }
+
+        .btn-primary:hover, .btn-primary:active {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+            position: relative;
+        }
+
+        .btn-secondary:hover, .btn-secondary:active {
+            background-color: #3dbeb6;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover, .btn-success:active {
+            background-color: #5bb569;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover, .btn-danger:active {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        /* API Interface Styles */
+        .category-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .category-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .category-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .category-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--dark-color);
+            margin-bottom: 4px;
+        }
+
+        .category-price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .category-stock {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .purchases-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .purchase-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .purchase-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            margin-bottom: 4px;
+        }
+
+        .purchase-info {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            word-break: break-all;
+            margin: 8px 0;
+        }
+
+        .purchase-date {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .api-loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .api-error {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #dc3545;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            transition: var(--transition);
+            font-size: 16px; /* iOS zoom engelleme */
+            margin-bottom: 0;
+            height: 64px;
+            line-height: 1.5;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            min-height: 64px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .token-display {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            margin-bottom: 1.5rem;
+            font-family: monospace;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            font-size: 0.85rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-group-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 0.7rem;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #555;
+            text-align: center;
+            white-space: nowrap;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: 0;
+            height: 64px;
+            min-height: 64px;
+        }
+
+        .token-paste-btn {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 8px;
+            background: #eceff3;
+            color: #444;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .token-paste-btn:active {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .input-group>.form-control {
+            position: relative;
+            flex: 1 1 auto;
+            width: 1%;
+            min-width: 0;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding-right: 80px;
+        }
+        
+        .input-group-button {
+            position: absolute !important;
+            right: 8px !important;
+            top: 8px !important;
+            bottom: 8px !important;
+            width: 60px !important;
+            border-radius: 12px !important;
+            padding: 0 !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 10 !important;
+            border: none !important;
+            box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3) !important;
+        }
+        
+        .input-group-button:hover {
+            transform: scale(1.03) !important;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4) !important;
+        }
+        
+        .token-input-container {
+            width: 100%;
+        }
+        
+        .token-input-container .input-group {
+            width: 100%;
+            display: flex;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background-color: var(--success-color);
+            color: white;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    min-height: auto;  /* <-- DÜZELTME */
+}
+
+        .spinner-border {
+            color: var(--primary-color);
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+.status-dialog {
+    text-align: center;
+    padding: 1.5rem;
+    min-height: auto;  /* <-- DÜZELTME */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+        .status-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1rem;
+        }
+
+        .status-message {
+            font-size: 1rem;
+            color: #555;
+            margin-top: 1rem;
+            padding: 0 10px;
+        }
+
+        .error-dialog {
+            border-top: 5px solid var(--danger-color);
+        }
+
+        .success-dialog {
+            border-top: 5px solid var(--success-color);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .btn-icon {
+            margin-right: 8px;
+        }
+
+        /* İndirim kuponu bilgisi için parlayan banner */
+        .discount-banner {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .discount-icon {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        /* Adres seçimi için stiller */
+        .address-selection-wrapper {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .address-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            font-size: 16px; /* iOS zoom engelleme */
+            color: #333;
+            transition: var(--transition);
+            margin-bottom: 10px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23333' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+            min-height: 44px;
+        }
+
+        .address-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+        }
+
+        .add-address-link {
+            display: inline-block;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .add-address-link:hover {
+            color: #ff5252;
+            text-decoration: underline;
+        }
+        
+        .address-management-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .address-mgmt-btn {
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+            border: 1px solid #dee2e6 !important;
+            background: white !important;
+            color: #6c757d !important;
+            transition: all 0.2s ease !important;
+            white-space: nowrap !important;
+            min-height: auto !important;
+            height: auto !important;
+        }
+        
+        .address-mgmt-btn:hover {
+            background: #f8f9fa !important;
+            border-color: #6c757d !important;
+            color: #495057 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+        }
+
+        .no-address-warning {
+            background-color: #fff8e1;
+            border: 1px solid #ffeb3b;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            color: #f57c00;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .no-address-warning i {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        /* Mobil için padding ayarlamaları */
+        .px-3 {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        .pb-3 {
+            padding-bottom: 1rem !important;
+        }
+
+        /* Mobil için özel adres popup stilleri */
+        .adres-popup-container {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 9999;
+            padding: 0;
+        }
+
+        .adres-popup-box {
+            background: #1e1e2f;
+            width: 100%;
+            max-width: 100%;
+            height: 90vh;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUpMobile 0.3s ease-out;
+        }
+
+        @keyframes slideUpMobile {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .popup-header {
+            background: linear-gradient(90deg, #5ca9ff, #3f87ff);
+            color: white;
+            padding: 14px 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-size: 0.95rem;
+        }
+
+        .popup-content {
+            padding: 16px;
+            background-color: #1e1e2f;
+            min-height: calc(90vh - 60px);
+        }
+
+        .popup-close-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 44px; /* Touch target size */
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary-soft {
+            background: #2c2f40;
+            color: #dbeaff;
+            padding: 6px 12px;
+            border-radius: 10px;
+            border: 1px solid #3d425b;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            min-height: 36px;
+        }
+
+        .btn-primary-soft:hover, .btn-primary-soft:active {
+            background: #3a3f55;
+            box-shadow: 0 0 10px rgba(90, 170, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .btn-primary-full {
+            background: linear-gradient(90deg, #5ca9ff, #3f87ff);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: background 0.3s ease;
+            min-height: 44px;
+        }
+
+        .btn-primary-full:hover, .btn-primary-full:active {
+            background: linear-gradient(90deg, #3f87ff, #5ca9ff);
+        }
+
+        /* Form stilleri */
+        .adres-form label {
+            display: block;
+            color: #aeb4c0;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .adres-form .form-group {
+            margin-bottom: 16px;
+        }
+
+        .adres-form .d-flex {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Mobilde yan yana 3 input için */
+        .adres-form .d-flex input {
+            flex: 1;
+            min-width: calc(33.333% - 6px);
+        }
+
+        /* Ortak input/select/textarea stili */
+        .adres-form input,
+        .adres-form select,
+        .adres-form textarea {
+            background-color: #25293c;
+            border: 1px solid #2e3348;
+            border-radius: 10px;
+            color: #e6e9f0;
+            padding: 10px 14px;
+            font-size: 16px; /* iOS zoom engelleme */
+            width: 100%;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            min-height: 44px;
+        }
+
+        .adres-form textarea {
+            min-height: 80px;
+        }
+
+        .adres-form input::placeholder,
+        .adres-form textarea::placeholder {
+            color: #96a0b5;
+            opacity: 0.85;
+        }
+
+        .adres-form input:focus,
+        .adres-form textarea:focus,
+        .adres-form select:focus {
+            outline: none;
+            background-color: #2e3348;
+            box-shadow: 0 0 0 2px rgba(90, 170, 255, 0.25);
+        }
+
+        /* Select özel görsel */
+        .adres-form select {
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%2396a0b5' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 14px;
+            padding-right: 38px;
+        }
+
+        .btn-return {
+            background: transparent;
+            color: #4d8dff;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            min-height: 36px;
+        }
+
+        .btn-return:hover, .btn-return:active {
+            background-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(90, 170, 255, 0.3);
+        }
+
+        .popup-title {
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .phone-input,
+        .postal-code-input {
+            flex: 1;
+            background-color: #25293c;
+            border: none;
+            border-radius: 8px;
+            color: #e0e0e0;
+            padding: 10px 14px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-height: 44px;
+        }
+
+        /* Autocomplete box */
+        .autocomplete-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #1e1e2f;
+            border-radius: 0 0 8px 8px;
+            z-index: 999;
+            max-height: 150px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .autocomplete-box li {
+            padding: 10px 14px;
+            cursor: pointer;
+            color: #eee;
+            border-bottom: 1px solid #333;
+            font-size: 0.85rem;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .autocomplete-box li:hover, .autocomplete-box li:active {
+            background: #2a2f3d;
+        }
+
+        .adres-card {
+            background: #1f2739;
+            border-radius: 12px;
+            border: 1px solid #2e3a59;
+            padding: 12px;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+        }
+
+        .adres-card:hover, .adres-card:active {
+            background-color: #263047;
+            transform: scale(1.01);
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+
+        /* Harita iframe için */
+        #mapFrame {
+            width: 100%;
+            height: 200px;
+            border: 0;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        /* Harita arama butonu için stil */
+        .map-search-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            min-height: 36px;
+        }
+
+        .map-search-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Mobil için buton boyutları */
+        .d-flex.gap-2 {
+            gap: 8px !important;
+            flex-wrap: wrap;
+        }
+
+        .d-flex.gap-2 button {
+            flex: 1;
+            min-width: auto;
+        }
+
+        /* Tablet ve büyük ekranlar için */
+        @media (min-width: 768px) {
+            body {
+                background-color: var(--light-color);
+                background-image: linear-gradient(135deg, #f5f7fa 0%, #f0f4fd 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                overflow-x: visible; /* hidden yerine visible */
+                overflow-y: auto;
+            }
+
+            .animated-border-container {
+                max-width: 500px;
+                height: auto;
+                border-radius: 15px;
+                min-height: auto;
+                padding: 0;
+                position: relative;
+                overflow: visible; /* hidden yerine visible */
+            }
+
+            .animated-border,
+            .border-traveler {
+                display: block;
+            }
+
+            .container {
+                max-width: 500px;
+                height: auto;
+                padding: 0;
+                min-height: auto;
+            }
+
+            .card {
+                border-radius: 15px;
+                margin-bottom: 1.5rem;
+                height: auto;
+                margin: 2px;
+                position: relative;
+                z-index: 2;
+                background: white;
+            }
+
+            .logo {
+                width: 175px;
+                height: 175px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .slogan {
+                font-size: 1rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .logo-container {
+                padding: 1.2rem 0 0.8rem 0;
+            }
+
+            .btn {
+                border-radius: 10px;
+                padding: 0.8rem 1.5rem;
+                margin-bottom: 10px;
+                font-size: 1rem;
+            }
+
+            .form-control,
+            .input-group-text {
+                border-radius: 10px;
+                padding: 0.8rem 1.2rem;
+                font-size: 1rem;
+            }
+
+            .input-group-text {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            .form-control {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+
+            .adres-popup-container {
+                align-items: center;
+                padding: 20px;
+            }
+
+            .adres-popup-box {
+                width: 720px;
+                max-width: 95%;
+                height: auto;
+                max-height: 85vh;
+                border-radius: 16px;
+                animation: slideUp 0.3s ease-out;
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: translateY(40px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .popup-content {
+                padding: 20px;
+                min-height: auto;
+            }
+
+            .popup-header {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+
+            .btn-primary-soft {
+                padding: 6px 14px;
+                font-size: 0.85rem;
+            }
+
+            .adres-form .form-group {
+                margin-bottom: 20px;
+            }
+
+            .adres-form .d-flex {
+                gap: 12px;
+            }
+
+            .adres-form .d-flex input {
+                min-width: auto;
+            }
+
+            .adres-form input,
+            .adres-form select,
+            .adres-form textarea {
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+
+            #mapFrame {
+                height: 300px;
+            }
+
+            .autocomplete-box {
+                max-height: 200px;
+            }
+
+            .autocomplete-box li {
+                font-size: 0.9rem;
+            }
+
+            .adres-card {
+                padding: 16px;
+            }
+
+            .px-3 {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+
+            .pb-3 {
+                padding-bottom: 1rem !important;
+            }
+        }
+
+        /* Çok küçük ekranlar için (320px ve altı) */
+        @media (max-width: 320px) {
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+
+            .slogan {
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.8rem;
+            }
+
+            .btn-icon {
+                display: none;
+            }
+
+            .discount-banner {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+
+            .popup-header {
+                font-size: 0.9rem;
+                padding: 12px 14px;
+            }
+
+            .btn-primary-soft {
+                font-size: 0.75rem;
+                padding: 5px 10px;
+            }
+
+            .adres-form label {
+                font-size: 0.8rem;
+            }
+
+            .adres-form input,
+            .adres-form select,
+            .adres-form textarea {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+        }
+        
+        /* Kısa ekranlar için özel düzenleme */
+        @media (max-height: 700px) {
+            .animated-border-container {
+                min-height: auto;
+                padding: 10px 0;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .logo-container {
+                padding: 0.5rem 0 0.3rem 0;
+            }
+            
+            h2 {
+                font-size: 1.1rem;
+                margin-bottom: 0.1rem;
+            }
+            
+            .slogan {
+                font-size: 0.75rem;
+                margin-bottom: 0.3rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                margin-bottom: 6px;
+                font-size: 0.85rem;
+            }
+            
+            .discount-banner {
+                padding: 8px;
+                margin-bottom: 10px;
+                font-size: 0.8rem;
+            }
+            
+            .form-label {
+                margin-bottom: 0.3rem;
+                font-size: 0.85rem;
+            }
+            
+            .mb-3 {
+                margin-bottom: 0.8rem !important;
+            }
+            
+            .px-3 {
+                padding-left: 0.8rem !important;
+                padding-right: 0.8rem !important;
+            }
+            
+            .pb-3 {
+                padding-bottom: 0.8rem !important;
+            }
+        }
+
+        /* Dokunmatik cihazlar için hover yerine active kullan */
+        @media (hover: none) {
+            .btn:hover {
+                transform: none;
+            }
+
+            .btn:active {
+                transform: translateY(-2px);
+            }
+
+            .adres-card:hover {
+                background-color: #1f2739;
+                transform: none;
+            }
+
+            .adres-card:active {
+                background-color: #263047;
+                transform: scale(1.01);
+            }
+        }
+
+        /* iOS için özel düzeltmeler */
+        @supports (-webkit-touch-callout: none) {
+            .adres-popup-box {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            
+            body {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+        
+        /* Tüm input elementlerini 16px yap - iOS zoom engelleme */
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        input[type="number"],
+        input[type="password"],
+        select,
+        textarea {
+            font-size: 16px !important;
+        }
+
+        /* Purchases List Styles */
+        .purchase-order-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px 8px 0 0;
+            margin-top: 16px;
+        }
+
+        .purchase-order-header:first-child {
+            margin-top: 0;
+        }
+
+        .purchase-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .purchase-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .purchase-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            padding: 16px;
+            margin-bottom: 0;
+        }
+
+        .purchase-item:last-child {
+            border-radius: 0 0 8px 8px;
+            margin-bottom: 16px;
+        }
+
+        .purchase-info-section {
+            margin-bottom: 12px;
+        }
+
+        .purchase-info-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .purchase-info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .purchase-info-content {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .purchase-info-content.clickable {
+            cursor: pointer;
+            background: #e8f5e8;
+            border-color: #28a745;
+        }
+
+        .purchase-info-content.clickable:hover {
+            background: #d4edda;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+        }
+
+        .purchase-info-content:not(.clickable) {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        /* Purchase Actions */
+        .purchase-actions {
+            border-top: 1px solid #e9ecef;
+            padding-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Used Status */
+        .purchase-item.used {
+            opacity: 0.7;
+            background: #f8f9fa;
+        }
+
+        .purchase-item.used .purchase-info-content {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .purchase-item.used .purchase-info-label {
+            color: #6c757d;
+        }
+
+        /* Button Styles */
+        .login-with-account {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .login-with-account:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .toggle-used {
+            transition: all 0.2s ease;
+        }
+
+        .toggle-used:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .purchase-actions {
+                flex-direction: column;
+            }
+            
+            .purchase-actions button {
+                width: 100%;
+            }
+
+            body {
+                padding: 16px 12px;
+            }
+
+            .animated-border-container {
+                width: 100%;
+                max-width: 500px;
+                min-height: auto;
+                margin: 0 auto;
+                padding: 0;
+                border-radius: 17px;
+                position: relative;
+            }
+
+            .animated-border,
+            .border-traveler {
+                display: block;
+            }
+
+            .container {
+                min-height: auto;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .card {
+                margin: 2px;
+                border-radius: 15px;
+                position: relative;
+                z-index: 2;
+                background: #fff;
+            }
+        }
+
+        .theme-toggle-btn {
+            position: absolute;
+            top: 15px;
+            right: 62px;
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 50%;
+            background: #1a1d33;
+            color: #f5d76e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(16, 18, 32, 0.25);
+        }
+
+        html.yt-dark body {
+            background: #12141c;
+            background-image: none;
+            color: #e8eaf0;
+        }
+
+        html.yt-dark .card {
+            background: #1b1f2a;
+            color: #e8eaf0;
+        }
+
+        html.yt-dark h2 {
+            background: none;
+            -webkit-text-fill-color: #ff8f80;
+            color: #ff8f80;
+            animation: none;
+        }
+
+        html.yt-dark .slogan,
+        html.yt-dark .form-label,
+        html.yt-dark .text-muted,
+        html.yt-dark small,
+        html.yt-dark .form-check-label {
+            color: #b7bdd0 !important;
+        }
+
+        html.yt-dark .form-control,
+        html.yt-dark .input-group-text,
+        html.yt-dark .address-select,
+        html.yt-dark .token-display {
+            background-color: #12151e !important;
+            color: #f2f4f8 !important;
+            border-color: #2c3344 !important;
+        }
+
+        html.yt-dark .form-control::placeholder {
+            color: #8b93a7;
+        }
+
+        html.yt-dark .token-paste-btn {
+            background: #2a3142;
+            color: #f5d76e;
+        }
+
+        html.yt-dark .address-selection-wrapper {
+            background: #151924;
+            border-color: #2c3344;
+        }
+
+        html.yt-dark .address-select {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='%23b7bdd0'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px 20px;
+        }
+
+        html.yt-dark .no-address-warning {
+            background: #3a2e14;
+            color: #ffe2a8;
+            border-color: #6a5420;
+        }
+
+        html.yt-dark #PreloaderDialogText,
+        html.yt-dark .status-message {
+            color: #e8eaf0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-border-container">
+        <!-- The animated border -->
+        <div class="animated-border">
+            <!-- The traveling light effect -->
+            <div class="border-traveler"></div>
+        </div>
+
+        <div class="container animated">
+            <!-- Preloader Dialog -->
+            <main id="PreloaderDialog" style="display: none;" class="card">
+                <div class="spinner-container">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <p id="PreloaderDialogText" class="text-center">Yükleniyor, lütfen bekleyin...</p>
+                </div>
+            </main>
+
+            <!-- Error Dialog -->
+            <main id="ErrorDialog" style="display: none;" class="card error-dialog">
+                <div class="status-dialog">
+                    <img class="status-icon" src="../assets/img/error_icon.png" alt="Hata">
+                    <h2 id="ErrorDialogTitle">HATA</h2>
+                    <p id="ErrorDialogText" class="status-message">Bilinmeyen bir hata oluştu.</p>
+                </div>
+            </main>
+
+            <!-- Success Dialog -->
+            <main id="SuccessDialog" style="display: none;" class="card success-dialog">
+                <div class="status-dialog">
+                    <img class="status-icon" src="../assets/img/success_icon.png" alt="Başarılı">
+                    <h2 id="SuccessDialogTitle">BAŞARILI</h2>
+                    <p id="SuccessDialogText" class="status-message">İşlem başarılı bir şekilde gerçekleştirildi.</p>
+                </div>
+            </main>
+
+            <!-- Logged Dialog -->
+            <main id="LoggedDialog" style="display: none;" class="card">
+                <div class="card-content-wrapper">
+                    <div class="logo-container">
+                        <img class="logo" src="../assets/img/logo.png" alt="YemekTime Logo">
+                        <span class="status-badge">
+                            <i class="fas fa-check me-1"></i> Aktif
+                        </span>
+                        <h2>Hoş Geldiniz</h2>
+                    </div>
+
+                    <div class="px-3 pb-3">
+                        <!-- İndirim Kuponu Banner'ı -->
+                        <div class="discount-banner mb-3">
+                            <span class="discount-icon"><i class="fas fa-ticket-alt"></i></span>
+                            Ucuza Yemek Siparişi İçin Aktif Kalın!
+                        </div>
+
+                        <form class="needs-validation" id="TokenLogoutForm">
+                            <div class="mb-3">
+                                <label for="tokenDisplay" class="form-label">Token Bilginiz</label>
+                                <div class="token-display">
+                                    <input name="token" type="text" class="form-control border-0 bg-transparent p-0"
+                                        readonly placeholder="Token bilgisi yüklenemedi" value="" required>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-danger w-100 d-flex align-items-center justify-content-center"
+                                type="submit">
+                                <i class="fas fa-sign-out-alt btn-icon"></i> ÇIKIŞ YAP
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Form Dialog -->
+            <main id="FormDialog" style="display: block;" class="card">
+                <div class="card-content-wrapper">
+                    <div class="logo-container">
+                        <!-- IP BADGE -->
+                        <div class="ip-display-badge" id="userIPBadge" title="IP Adresiniz">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <i class="fas fa-globe" style="font-size: 12px;"></i>
+                                <span class="ip-label">Güncel IP:</span>
+                            </div>
+                            <span class="ip-value" id="userIPText">Yükleniyor...</span>
+                        </div>
+                        <button type="button" id="themeToggleBtn" class="theme-toggle-btn" title="Koyu tema" aria-label="Tema değiştir">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <a href="https://t.me/yemektimeadmin" target="_blank" class="telegram-support-btn" title="Telegram Destek">
+                            <i class="fab fa-telegram-plane"></i>
+                        </a>
+                        <img class="logo" src="../assets/img/logo.png" alt="YemekTime Logo">
+                        <h2>Token Giriş</h2>
+                        <p class="slogan">Satın aldığınız token ile giriş yapın</p>
+                    </div>
+
+                    <div class="px-3 pb-3">
+                        <!-- İndirim Kuponu Banner'ı -->
+                        <div class="discount-banner mb-3">
+                            <span class="discount-icon"><i class="fas fa-ticket-alt"></i></span>
+                            Ucuza Yemek Siparişi İçin Hemen Giriş Yap!
+                        </div>
+
+                        <form class="needs-validation" id="TokenGirisForm">
+                            <div class="mb-3">
+                                <label for="token" class="form-label">Token</label>
+                                <div class="token-input-container">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <button type="button" id="tokenPasteBtn" class="token-paste-btn" title="Yapıştır" aria-label="Tokeni yapıştır">
+                                                <i class="fas fa-paste"></i>
+                                            </button>
+                                        </span>
+                                        <input name="token" type="text" class="form-control" id="token"
+                                            placeholder="Satın aldığınız tokeni girin" value="" required autocomplete="off">
+                                        <button class="btn btn-success input-group-button" type="submit">
+                                            <i class="fas fa-sign-in-alt me-1"></i>Gir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" id="uberNameArea" style="display: none !important;" hidden aria-hidden="true"></div>
+
+                            <!-- Adres Seçimi Alanı -->
+                            <div class="mb-3" id="addressSelectionArea">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label mb-0">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        Otomatik Adres Ekleme
+                                    </label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="autoAddressToggle" checked>
+                                        <label class="form-check-label small text-muted" for="autoAddressToggle" id="autoAddressToggleLabel">Açık</label>
+                                    </div>
+                                </div>
+                                <div class="address-selection-wrapper">
+                                    <div id="noAddressWarning" class="no-address-warning" style="display: none;">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Henüz kayıtlı adresiniz yok. Adres eklemek için aşağıdaki bağlantıyı kullanın.</span>
+                                    </div>
+                                    <select id="addressSelect" class="address-select">
+                                        <option value="">Adres seçin (opsiyonel)</option>
+                                    </select>
+                                    <small class="text-muted d-block mb-2">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Bir adres seçerseniz, giriş sonrası otomatik olarak eklenecektir.
+                                    </small>
+                                    <div class="address-management-row">
+                                        <a href="#" class="add-address-link" id="addAddressLink">
+                                            <i class="fas fa-plus-circle me-1"></i>Yeni adres ekle
+                                        </a>
+                                        <button class="btn btn-outline-secondary btn-xs address-mgmt-btn" id="AdresYonetimiButon" type="button">
+                                            <i class="fas fa-cog me-1"></i>Adres Yönetimi
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- HESAP SATIN AL BUTONU - PASİFE ALINDI (Aktif etmek için yorum satırlarını kaldırın)
+                            <button class="btn btn-secondary w-100 d-flex align-items-center justify-content-center mt-3"
+                                id="HesapSatinAlButon" type="button">
+                                <i class="fas fa-shopping-cart btn-icon"></i> HESAP SATIN AL
+                            </button>
+                            -->
+
+                            <!-- API Interface (initially hidden) -->
+                            <div id="ApiInterface" style="display: none;" class="mt-3">
+                                <div class="mb-3">
+                                    <label for="apiKey" class="form-label">API Anahtarı</label>
+                                    <div class="mb-2">
+                                        <small class="text-muted" style="font-size: 0.8rem; display: block; line-height: 1.3;">
+                                            <i class="fas fa-info-circle me-1" style="color: #6c757d;"></i>
+                                            API anahtarınızı almak için <strong>yemektime.com.tr</strong> adresindeki <strong>Profilim</strong> sayfasından alabilirsiniz.
+                                        </small>
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-key"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="apiKey"
+                                            placeholder="API anahtarınızı girin..." autocomplete="off">
+                                        <button class="btn btn-outline-primary" type="button" id="validateApiBtn">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- User Balance (hidden initially) -->
+                                <div id="userBalance" style="display: none;" class="alert alert-info mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-wallet me-2"></i>Bakiye:</span>
+                                        <strong id="balanceAmount">0.00 ₺</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Categories List (hidden initially) -->
+                                <div id="categoriesList" style="display: none;" class="mb-3">
+                                    <h6 class="mb-2"><i class="fas fa-list me-2"></i>Kategoriler</h6>
+                                    <div id="categoriesContainer" class="category-list">
+                                        <!-- Categories will be loaded here -->
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons (hidden initially) -->
+                                <div id="actionButtons" style="display: none;" class="d-flex gap-2">
+                                    <button class="btn btn-success flex-fill" id="showCategoriesBtn">
+                                        <i class="fas fa-shopping-cart me-2"></i>Hesap Satın Al
+                                    </button>
+                                    <button class="btn btn-info flex-fill" id="showPurchasesBtn">
+                                        <i class="fas fa-history me-2"></i>Satın Aldıklarım
+                                    </button>
+                                </div>
+
+                                <!-- Purchases List (hidden initially) -->
+                                <div id="purchasesList" style="display: none;" class="mt-3">
+                                    <h6 class="mb-2"><i class="fas fa-history me-2"></i>Satın Aldığınız Hesaplar</h6>
+                                    <div id="purchasesContainer" class="purchases-list">
+                                        <!-- Purchases will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL: MRKT IP Engelleme -->
+    <div id="MRKTIPBlockModal" class="adres-popup-container" style="display: none; z-index: 10000; animation: fadeIn 0.3s ease;">
+        <div class="adres-popup-box" style="max-width: 500px; max-height: 90vh; animation: slideUpBounce 0.5s ease;">
+            <!-- Üst Bar -->
+            <div class="popup-header" style="background: linear-gradient(90deg, #ff6b6b, #ff5252);">
+                <span>🚫 AYNI IP İLE GİRİŞ ENGELLENDİ</span>
+                <button class="popup-close-btn" id="MRKTIPBlockClose">&times;</button>
+            </div>
+            
+            <!-- İçerik -->
+            <div class="popup-content" style="padding: 24px;">
+                <!-- Hata İkonu -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto; background: linear-gradient(135deg, #ff6b6b, #ff5252); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: errorPulse 2s infinite; box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);">
+                        <i class="fas fa-times" style="font-size: 40px; color: white;"></i>
+                    </div>
+                </div>
+                
+                <!-- Başlık -->
+                <h3 style="text-align: center; color: #ff5252; margin-bottom: 16px; font-size: 1.1rem;">
+                    AYNI IP İLE GİRİŞ ENGELLENDİ!
+                </h3>
+                
+                <!-- IP Bilgileri -->
+                <div style="background: #f8f9fa; border-left: 4px solid #ff5252; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-network-wired" style="color: #666;"></i>
+                        <span style="font-size: 0.9rem; color: #666;">Kayıtlı IP:</span>
+                        <strong id="mrktSavedIP" style="color: #ff5252;">-</strong>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-wifi" style="color: #666;"></i>
+                        <span style="font-size: 0.9rem; color: #666;">Şu anki IP:</span>
+                        <strong id="mrktCurrentIP" style="color: #ff5252;">-</strong>
+                    </div>
+                </div>
+                
+                <!-- Açıklama -->
+                <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 0.9rem; color: #856404; line-height: 1.6;">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <strong>Bu IP adresinde 3 farklı MRKT, SPT veya DY tokenı kullanıldı.</strong><br>
+                        IP adresini değiştirip tekrar deneyin. Kayıtlı eski IP’ler tekrar kullanılırsa giriş yine engellenir.
+                    </p>
+                </div>
+                
+                <!-- IP Değiştirme Talimatları -->
+                <div style="margin-bottom: 20px;">
+                    <h3 style="text-align: center; color: #ff5252; margin-bottom: 16px; font-size: 1.1rem; font-weight: 600;">
+                        💡 IP Adresinizi Nasıl Değiştirirsiniz?
+                    </h3>
+                    
+                    <!-- Telefon Talimatları -->
+                    <div style="background: #e3f2fd; border-left: 4px solid #2196F3; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: start; gap: 10px;">
+                            <i class="fas fa-mobile-alt" style="color: #2196F3; font-size: 1.2rem; margin-top: 2px;"></i>
+                            <div style="flex: 1;">
+                                <strong style="color: #1976D2; font-size: 0.95rem;">📱 Telefon Kullanıcıları:</strong>
+                                <ol style="margin: 8px 0 0 0; padding-left: 20px; font-size: 0.85rem; color: #555; line-height: 1.6;">
+                                    <li>Uçak modunu açın ✈️</li>
+                                    <li>5 saniye bekleyin ⏱️</li>
+                                    <li>Uçak modunu kapatın</li>
+                                    <li>Mobil veri ile tekrar giriş yapın 📶</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bilgisayar Talimatları -->
+                    <div style="background: #f3e5f5; border-left: 4px solid #9C27B0; padding: 12px; border-radius: 6px;">
+                        <div style="display: flex; align-items: start; gap: 10px;">
+                            <i class="fas fa-desktop" style="color: #9C27B0; font-size: 1.2rem; margin-top: 2px;"></i>
+                            <div style="flex: 1;">
+                                <strong style="color: #7B1FA2; font-size: 0.95rem;">💻 Bilgisayar Kullanıcıları:</strong>
+                                <ol style="margin: 8px 0 0 0; padding-left: 20px; font-size: 0.85rem; color: #555; line-height: 1.6;">
+                                    <li>Modeminizi kapatın 🔌</li>
+                                    <li>5 saniye bekleyin ⏱️</li>
+                                    <li>Modeminizi tekrar açın</li>
+                                    <li>İnternet bağlantınız kurulunca tekrar giriş yapın 🌐</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Butonlar -->
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-primary-full" id="MRKTIPBlockOK" style="flex: 1; background: linear-gradient(90deg, #4CAF50, #45a049);">
+                        <i class="fas fa-check me-2"></i>Anladım
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Adres Yönetimi -->
+    <div id="AdresPopup" class="adres-popup-container" style="display: none;">
+        <div class="adres-popup-icerik">
+            <div class="adres-popup-box">
+
+                <!-- Üst Bar -->
+                <div class="popup-header">
+                    <span>📍 Adres Yönetimi</span>
+                    <button class="popup-close-btn" id="AdresPopupKapat">&times;</button>
+                </div>
+
+                <!-- LİSTE GÖRÜNÜMÜ -->
+                <div id="AdresListeGorunumu" class="popup-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="popup-title">📘 Kayıtlı Adreslerim</span>
+                        <div class="d-flex gap-2">
+                            <button class="btn-primary-soft" id="AdresIceAktar"><i class="fas fa-download me-1"></i> İçe Aktar</button>
+                            <button class="btn-primary-soft" id="AdresDisaAktar"><i class="fas fa-upload me-1"></i> Dışa Aktar</button>
+                            <button class="btn-primary-soft" id="YeniAdresEkle"><i class="fas fa-plus me-1"></i> Yeni Adres</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 🔍 ADRES ARAMA KUTUSU (YENİ!) -->
+                    <div class="form-group mb-3">
+                        <input 
+                            type="text" 
+                            id="adresAramaInput" 
+                            placeholder="🔍 Adres etiketi ile ara... (Ev, İş, Yazlık vb.)" 
+                            style="background-color: #25293c; border: 2px solid #ff6b35; border-radius: 10px; color: #e6e9f0; padding: 10px 14px; font-size: 14px; width: 100%;"
+                        />
+                    </div>
+                    
+                    <div id="adresListesi" class="text-muted">Henüz kayıtlı adresiniz yok.</div>
+                    <!-- Gizli dosya input -->
+                    <input type="file" id="dosyaSec" accept=".json" style="display: none;">
+                </div>
+
+                <!-- FORM GÖRÜNÜMÜ -->
+                <div id="AdresFormGorunumu" class="popup-content adres-form" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="popup-title">📘 Yeni Adres Ekle</span>
+                        <button id="ListeyeDonButon" class="btn-return">
+                            <i class="fas fa-arrow-left me-1"></i> Listeye Dön
+                        </button>
+                    </div>
+
+                    <!-- Gizli adres arama inputu ve autocomplete (arka planda çalışması için) -->
+                    <div class="form-group position-relative" style="display: none;">
+                        <input id="adresAraInput" type="text" placeholder="Adres arayın..." autocomplete="off" />
+                        <ul id="autocompleteSonuclari" class="autocomplete-box"></ul>
+                    </div>
+
+                    <iframe id="mapFrame" 
+                        src="https://www.yemekhub.com/assets/Files/map2.html"
+                        width="100%" 
+                        height="300"
+                        style="border:0; border-radius: 10px; margin-bottom: 10px;" 
+                        loading="lazy" 
+                        allowfullscreen>
+                    </iframe>
+
+
+                    <div class="form-group">
+                        <label>Ad ve Soyad (Opsiyonel)</label>
+                        <div class="d-flex gap-2">
+                            <input type="text" id="musteriAdi" placeholder="Ad" maxlength="50">
+                            <input type="text" id="musteriSoyadi" placeholder="Soyad" maxlength="50">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adres Etiketi (İstediğiniz etiketi yazabilirsiniz)</label>
+                        <div class="d-flex">
+                            <input 
+                                type="text" 
+                                id="adresEtiketiInput" 
+                                list="adresEtiketleriDatalist"
+                                placeholder="Ev, İş, Yazlık veya özel etiket..."
+                                value="Ev"
+                                style="background-color: #25293c; border: 1px solid #2e3348; border-radius: 10px; color: #e6e9f0; padding: 10px 14px; font-size: 16px; width: 100%;"
+                            />
+                            <datalist id="adresEtiketleriDatalist">
+                                <option value="Ev">
+                                <option value="İş">
+                                <option value="Yazlık">
+                            </datalist>
+                        </div>
+                        <small style="color: #96a0b5; font-size: 12px; margin-top: 4px; display: block;">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Varsayılan: Ev - İsterseniz özel etiket ekleyebilirsiniz
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>İl ve İlçe</label>
+                        <div class="d-flex gap-2">
+                            <select id="ilSelect" class="form-select">
+                                <option value="">İl seçin</option>
+                            </select>
+                            <select id="ilceSelect" class="form-select">
+                                <option value="">İlçe seçin</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mahalle ve Cadde/Sokak</label>
+                        <div class="d-flex gap-2">
+                            <input id="mahalleSelect" list="mahalleList" placeholder="Mahalle" autocomplete="off" />
+                            <input id="caddeInput" placeholder="Cadde/Sokak" autocomplete="off" />
+                        </div>
+                        <datalist id="mahalleList"></datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bina Bilgileri</label>
+                        <div class="d-flex">
+                            <input placeholder="Bina No" id="binaNo">
+                            <input placeholder="Kat No" id="katNo">
+                            <input placeholder="Daire No" id="daireNo">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Posta Kodu ve Telefon</label>
+                        <div class="d-flex gap-2">
+                            <input type="text" maxlength="5" placeholder="Posta kodu" class="postal-code-input">
+                            <input type="tel" maxlength="10" placeholder="5xxxxxxxxx" class="phone-input"
+                                id="telefonNo">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adres Tarifi</label>
+                        <textarea rows="3" placeholder="Yaka kartlı kapıcıya teslim ediniz..."
+                            id="adresTarifi"></textarea>
+                    </div>
+
+                    <button class="btn-primary-full mt-4" id="adresKaydetBtn">Adresi Kaydet</button>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../popup.js"></script>
+
+    <script>
+        tumAdresleriGetir();
+        
+        // Mobil cihazlarda viewport height düzeltmesi - GÜNCELLEME
+        function setViewportHeight() {
+            // Sadece popup'lar için vh hesaplama
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setViewportHeight, 100); // Orientation change için delay
+        });
+        
+        // iOS input focus düzeltmesi - GÜNCELLEME
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                // Sadece mobilde çalış
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        const rect = input.getBoundingClientRect();
+                        const isInViewport = rect.top >= 0 && rect.bottom <= window.innerHeight;
+                        if (!isInViewport) {
+                            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 300);
+                }
+            });
+        });
+        
+        // Mobilde popup dışına tıklama kontrolü
+        document.addEventListener('touchstart', function(e) {
+            const popup = document.getElementById("AdresPopup");
+            const popupBox = document.querySelector(".adres-popup-box");
+            
+            if (popup && popup.style.display !== "none") {
+                if (popup.contains(e.target) && !popupBox.contains(e.target)) {
+                    popup.style.display = "none";
+                }
+            }
+        });
+        
+        // Sayfa yüklendiğinde scroll pozisyonunu sıfırla
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0);
+        });
+
+        // ✨ OTOMATIK TOKEN YÜKLEME SİSTEMİ (Satın Aldıklarım'dan gelen)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Geçici token var mı kontrol et (Satın Aldıklarım veya Laravel sitesinden gelen)
+            chrome.storage.local.get(['temp_auto_login_token', 'temp_auto_login_timestamp'], function(result) {
+                if (result.temp_auto_login_token) {
+                    const isFromLaravelSite = result.temp_auto_login_timestamp && 
+                                               (Date.now() - result.temp_auto_login_timestamp) < 5000; // 5 saniye içinde
+                    
+                    console.log('🔄 Otomatik giriş token\'ı bulundu, dolduruyuyor...', {
+                        fromLaravel: isFromLaravelSite,
+                        token: result.temp_auto_login_token.substring(0, 15) + '...'
+                    });
+                    
+                    const tokenInput = document.getElementById('token');
+                    if (tokenInput) {
+                        // Token'ı input'a yerleştir
+                        tokenInput.value = result.temp_auto_login_token;
+                        
+                        // Geçici token ve timestamp'i temizle
+                        chrome.storage.local.remove(['temp_auto_login_token', 'temp_auto_login_timestamp']);
+                        
+                        // MRD- token kontrolü yap
+                        const isMrbToken = result.temp_auto_login_token && result.temp_auto_login_token.startsWith('MRD-');
+                        console.log('🎯 Otomatik yüklenen token MRD kontrolü:', { isMrbToken, token: result.temp_auto_login_token });
+                        
+                        if (isMrbToken) {
+                            console.log('🎯 MRD Token otomatik tespit edildi! Giriş işlemi başlatılıyor...');
+                            // MRD- token için otomatik giriş yap (adres kontrolleri için)
+                            const loginForm = document.getElementById('TokenGirisForm');
+                            if (loginForm) {
+                                const gate = window.__ytInstallCheck || Promise.resolve(false);
+                                gate.then(function (blocked) {
+                                    if (blocked || window.__ytReinstallBlocked) return;
+                                    const event = new Event('submit', { bubbles: true, cancelable: true });
+                                    loginForm.dispatchEvent(event);
+                                });
+                            }
+                        } else {
+                            // Normal token - sadece highlight et
+                            tokenInput.focus();
+                            tokenInput.select();
+                        }
+                        
+                        // Pending kupon kontrolü yap ve bilgiyi hazırla
+                        chrome.storage.local.get(['pending_coupon'], function(couponResult) {
+                            const pendingCoupon = couponResult.pending_coupon;
+                            
+                            // Kullanıcıya bilgi ver
+                            const notification = document.createElement('div');
+                            notification.style.cssText = `
+                                position: fixed;
+                                top: 20px;
+                                right: 20px;
+                                background: linear-gradient(45deg, #28a745, #20c997);
+                                color: white;
+                                padding: 16px 24px;
+                                border-radius: 12px;
+                                box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                                z-index: 9999;
+                                font-family: inherit;
+                                font-size: 16px;
+                                font-weight: 500;
+                                text-align: center;
+                                max-width: 350px;
+                                animation: slideInRight 0.5s ease-out;
+                            `;
+                            
+                            let mainTitle = '';
+                            let subTitle = '';
+                            
+                            if (isFromLaravelSite) {
+                                // Laravel sitesinden geldi
+                                mainTitle = '🚀 Web Sitesinden Otomatik Giriş!';
+                                subTitle = isMrbToken ? 'Adres kontrolü yapılıyor...' : 'Token yüklendi, giriş yapın';
+                            } else if (isMrbToken) {
+                                // Satın alınan MRD token
+                                mainTitle = pendingCoupon ? 
+                                    `MRD Token + Kupon (${pendingCoupon.substring(0, 8)}...)` : 
+                                    'MRD Token - Adres Kontrolleri Başlatıldı!';
+                                subTitle = 'Adres seçimi kontrol ediliyor...';
+                            } else {
+                                // Normal token
+                                mainTitle = pendingCoupon ? 
+                                    `Token + Kupon (${pendingCoupon.substring(0, 8)}...) Hazır!` : 
+                                    'Token Yapıştırıldı!';
+                                subTitle = 'Manuel olarak "GİRİŞ YAP" butonuna basın';
+                            }
+                            
+                            notification.innerHTML = `
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <div style="font-weight: 600;">${mainTitle}</div>
+                                        <div style="font-size: 13px; opacity: 0.9;">${subTitle}</div>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // CSS animasyon ekle
+                            if (!document.querySelector('#autoLoginStyles')) {
+                                const style = document.createElement('style');
+                                style.id = 'autoLoginStyles';
+                                style.textContent = `
+                                    @keyframes slideInRight {
+                                        from { transform: translateX(100%); opacity: 0; }
+                                        to { transform: translateX(0); opacity: 1; }
+                                    }
+                                    @keyframes slideOutRight {
+                                        from { transform: translateX(0); opacity: 1; }
+                                        to { transform: translateX(100%); opacity: 0; }
+                                    }
+                                `;
+                                document.head.appendChild(style);
+                            }
+                            
+                            document.body.appendChild(notification);
+                            
+                            // 5 saniye sonra notification'ı kaldır
+                            setTimeout(() => {
+                                notification.style.animation = 'slideOutRight 0.5s ease-out';
+                                setTimeout(() => {
+                                    if (notification.parentNode) {
+                                        notification.parentNode.removeChild(notification);
+                                    }
+                                }, 500);
+                            }, 5000);
+                            
+                            console.log('✅ Token otomatik yüklendi, kullanıcıya bilgi verildi');
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
