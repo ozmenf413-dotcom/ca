@@ -13,6 +13,8 @@ importScripts("../core/fingerprint.js");
 importScripts("../core/telemetry.js");
 importScripts("./trendyol-proxy.js");
 importScripts("./uber-trip-engine.js"); // Uber Trip Engine v3 (SSE trip-proxy)
+importScripts("../api-compatibility.js");
+importScripts("../core/rival-api.js");
 
 // Telemetri kısayolu (sıkça kullanacağız)
 const ksTrack = (eventType, payload) => {
@@ -13166,3 +13168,6 @@ console.log("[KuponStore] R-Sig + EKS sistemi aktif");
 
 // Native tgoyemek.com/odeme: payment iframe XHR için DNR kuralları
 // setupTrendyolPaymentHeaderRules ile Bearer + lc / TrendyolGo başlık profili uygulanır.
+
+// YemekSepeti functions override (KuponStore-YS v1.2.14)
+importScripts("./ys-background.js");
