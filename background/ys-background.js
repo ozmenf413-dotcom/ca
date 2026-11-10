@@ -1869,7 +1869,7 @@ function ksResolveName(addr) {
   let fn = addr.first_name || addr.firstName || addr.ad || '';
   let ln = addr.last_name || addr.lastName || addr.soyad || '';
   if (!fn && !ln) {
-    const full = String(addr.name || addr.fullName || addr.nameSurname || addr.ad_soyad || addr.adSoyad || addr.title || '').trim();
+    const full = String(addr.fullname || addr.fullName || addr.name || addr.nameSurname || addr.name_surname || addr.ad_soyad || addr.adSoyad || addr.isim || addr.title || '').trim();
     if (full) {
       const parts = full.split(/\s+/).filter(Boolean);
       if (parts.length === 1) { fn = parts[0]; ln = parts[0]; }
