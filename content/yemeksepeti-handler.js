@@ -1774,6 +1774,33 @@ function handleMainProcess() {
    chrome.storage.sync.get(['yemekhub_session'], async function (result) {
        HBY_SessionData = result.yemekhub_session;
 
+       // --- GEÇİCİ TEŞHİS BANDI (sorun tespiti için) ---
+       try {
+         if (isYemeksepetiDomain()) {
+           chrome.storage.local.get(['kuponstore_addresses', 'savedAddresses'], function (ad) {
+             var addrCount = ((ad && ad.kuponstore_addresses) || (ad && ad.savedAddresses) || []).length;
+             var s = HBY_SessionData || {};
+             var hasTok = document.cookie.indexOf('access_token=') !== -1;
+             var el = document.createElement('div');
+             el.id = 'ks-ys-debug';
+             el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#111;color:#0f0;font:12px/1.4 monospace;padding:6px 8px;white-space:pre-wrap;border-bottom:2px solid #0f0';
+             el.textContent =
+               'KS-YS TEŞHİS\n' +
+               'session var: ' + (!!HBY_SessionData) + '\n' +
+               'isLogged: ' + (!!s.isLogged) + '\n' +
+               'autoAddAddress: ' + (!!s.autoAddAddress) + '\n' +
+               'selectedAddress var: ' + (!!s.selectedAddress) + '\n' +
+               'access_token cookie: ' + hasTok + '\n' +
+               'kayıtlı adres sayısı: ' + addrCount + '\n' +
+               'isCookieInserted: ' + (!!s.isCookieInserted) + '\n' +
+               'cookies sayısı: ' + ((s.cookies && s.cookies.length) || 0);
+             var mount = function () { if (document.body) { document.body.appendChild(el); } else { setTimeout(mount, 100); } };
+             mount();
+           });
+         }
+       } catch (e) {}
+       // --- /TEŞHİS ---
+
 if (HBY_SessionData && HBY_SessionData.isLogged) {
 
 if (isExtensionPage) {
