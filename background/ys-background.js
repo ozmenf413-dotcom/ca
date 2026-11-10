@@ -3,6 +3,29 @@
 // All YS-specific functions and handlers
 // ============================================
 
+// Yükleme işareti (teşhis için)
+try { chrome.storage.local.set({ ys_bg_loaded: Date.now() }); } catch (_) {}
+
+// Savunmacı API polyfill'leri — Quetta/WebKit bazı API'leri desteklemeyebilir;
+// top-level bir çağrının hata fırlatıp tüm modülü (ysUiLoginFlow dahil) bozmasını önler.
+try {
+  if (typeof chrome !== 'undefined') {
+    if (!chrome.alarms) {
+      chrome.alarms = {
+        create() {}, clear(_n, c) { if (c) c(true); }, clearAll(c) { if (c) c(true); },
+        get(_n, c) { if (c) c(null); }, getAll(c) { if (c) c([]); },
+        onAlarm: { addListener() {}, removeListener() {} }
+      };
+    }
+    if (chrome.cookies && !chrome.cookies.onChanged) chrome.cookies.onChanged = { addListener() {}, removeListener() {} };
+    if (chrome.tabs) {
+      if (!chrome.tabs.onRemoved) chrome.tabs.onRemoved = { addListener() {} };
+      if (!chrome.tabs.onUpdated) chrome.tabs.onUpdated = { addListener() {} };
+    }
+    if (!chrome.downloads) chrome.downloads = { download() {}, onChanged: { addListener() {} } };
+  }
+} catch (_) {}
+
 function isYemeksepetiDomain(domain) {
   const cleanDomain = domain.toLowerCase().replace('www.', '');
   const allowedDomains = [
@@ -3771,3 +3794,6 @@ async function ksEnsureWebSession(auth) {
     return false;
   }
 }
+
+// Yükleme tamamlandı işareti (teşhis için)
+try { chrome.storage.local.set({ ys_bg_loaded_end: Date.now() }); } catch (_) {}

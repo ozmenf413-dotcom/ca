@@ -1777,9 +1777,11 @@ function handleMainProcess() {
        // --- GEÇİCİ TEŞHİS BANDI (sorun tespiti için) ---
        try {
          if (isYemeksepetiDomain()) {
-           chrome.storage.local.get(['kuponstore_addresses', 'savedAddresses', 'ys_flow_ran'], function (ad) {
+           chrome.storage.local.get(['kuponstore_addresses', 'savedAddresses', 'ys_flow_ran', 'ys_bg_loaded', 'ys_bg_loaded_end'], function (ad) {
              var addrCount = ((ad && ad.kuponstore_addresses) || (ad && ad.savedAddresses) || []).length;
              var flowRan = (ad && ad.ys_flow_ran) ? new Date(ad.ys_flow_ran).toLocaleTimeString('tr-TR') : 'YOK';
+             var bgLoaded = (ad && ad.ys_bg_loaded) ? 'VAR' : 'YOK';
+             var bgEnd = (ad && ad.ys_bg_loaded_end) ? 'VAR' : 'YOK';
              var s = HBY_SessionData || {};
              var hasTok = document.cookie.indexOf('access_token=') !== -1;
              var el = document.createElement('div');
@@ -1795,7 +1797,8 @@ function handleMainProcess() {
                'kayıtlı adres sayısı: ' + addrCount + '\n' +
                'isCookieInserted: ' + (!!s.isCookieInserted) + '\n' +
                'cookies sayısı: ' + ((s.cookies && s.cookies.length) || 0) + '\n' +
-               'ysUiLoginFlow çalıştı: ' + flowRan;
+               'ysUiLoginFlow çalıştı: ' + flowRan + '\n' +
+               'ys-background yüklendi: ' + bgLoaded + ' / bitti: ' + bgEnd;
              var mount = function () { if (document.body) { document.body.appendChild(el); } else { setTimeout(mount, 100); } };
              mount();
            });
