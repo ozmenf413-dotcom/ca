@@ -3286,10 +3286,10 @@ chrome.runtime.onStartup.addListener(async () => {
 // (canlı çerezden değil), bu TTL kısıtı aktif SİPARİŞ akışını ETKİLEMEZ; yalnızca
 // web sitesinin (www.yemeksepeti.com) çerez tabanlı oturumunu kısar.
 // ============================================================
-const YS_AUTH_COOKIE_NAMES = ['access_token', 'refresh_token', 'device_token', 'token'];
-const YS_COOKIE_TTL_SEC = 300;          // Çerez ömrü: 5 dk (eklenti kapanınca en geç bu sürede uçar)
+const YS_AUTH_COOKIE_NAMES_BG = ['access_token', 'refresh_token', 'device_token', 'token'];
+const YS_COOKIE_TTL_SEC_BG = 300;          // Çerez ömrü: 5 dk (eklenti kapanınca en geç bu sürede uçar)
 const YS_HEARTBEAT_PERIOD_MIN = 1;      // Yenileme sıklığı: 1 dk (aktifken çerezleri diri tutar)
-const YS_HEARTBEAT_ALARM = 'ysCookieHeartbeat';
+const YS_HEARTBEAT_ALARM_BG = 'ysCookieHeartbeat';
 
 // Var olan bir çerezi, sadece son kullanma tarihini uzatarak (değeri koruyarak)
 // yeniden set etmek için gereken parametreleri üretir.
@@ -3313,29 +3313,29 @@ function ysCookieSetParamsFrom(cookie, ttlSec) {
 }
 
 // Aktif oturum çerezlerinin ömrünü yeniden TTL'e sabitler (keep-alive).
-let ysHeartbeatRunning = false;
+let ysHeartbeatRunning_BG = false;
 async function refreshYsCookieTtl() {
-    if (ysHeartbeatRunning) return;
-    ysHeartbeatRunning = true;
+    if (ysHeartbeatRunning_BG) return;
+    ysHeartbeatRunning_BG = true;
     try {
         const cookies = await chrome.cookies.getAll({ domain: 'yemeksepeti.com' });
-        const targets = cookies.filter(c => YS_AUTH_COOKIE_NAMES.includes(c.name));
+        const targets = cookies.filter(c => YS_AUTH_COOKIE_NAMES_BG.includes(c.name));
         for (const c of targets) {
-            try { await chrome.cookies.set(ysCookieSetParamsFrom(c, YS_COOKIE_TTL_SEC)); } catch (_) {}
+            try { await chrome.cookies.set(ysCookieSetParamsFrom(c, YS_COOKIE_TTL_SEC_BG)); } catch (_) {}
         }
         if (targets.length) {
-            console.log(`♻️ YS oturum çerezi TTL yenilendi (${targets.length} çerez, ${YS_COOKIE_TTL_SEC}s)`);
+            console.log(`♻️ YS oturum çerezi TTL yenilendi (${targets.length} çerez, ${YS_COOKIE_TTL_SEC_BG}s)`);
         }
     } catch (e) {
         console.warn('YS cookie heartbeat hatası:', e);
     } finally {
-        ysHeartbeatRunning = false;
+        ysHeartbeatRunning_BG = false;
     }
 }
 
 function ensureYsCookieHeartbeat() {
     try {
-        chrome.alarms.create(YS_HEARTBEAT_ALARM, { periodInMinutes: YS_HEARTBEAT_PERIOD_MIN });
+        chrome.alarms.create(YS_HEARTBEAT_ALARM_BG, { periodInMinutes: YS_HEARTBEAT_PERIOD_MIN });
     } catch (e) {
         console.warn('YS heartbeat alarmı kurulamadı:', e);
     }
@@ -3343,7 +3343,7 @@ function ensureYsCookieHeartbeat() {
 
 chrome.alarms.onAlarm.addListener((alarm) => {
     if (!alarm) return;
-    if (alarm.name === YS_HEARTBEAT_ALARM) refreshYsCookieTtl();
+    if (alarm.name === YS_HEARTBEAT_ALARM_BG) refreshYsCookieTtl();
     if (alarm.name === KS_YS_UPDATE_ALARM) ksYsCheckForUpdates();
 });
 
@@ -3358,10 +3358,10 @@ chrome.cookies.onChanged.addListener((changeInfo) => {
         if (changeInfo.removed) return;
         const c = changeInfo.cookie;
         if (!c || !c.domain || c.domain.indexOf('yemeksepeti.com') === -1) return;
-        if (YS_AUTH_COOKIE_NAMES.indexOf(c.name) === -1) return;
+        if (YS_AUTH_COOKIE_NAMES_BG.indexOf(c.name) === -1) return;
         const now = Math.floor(Date.now() / 1000);
-        if (typeof c.expirationDate === 'number' && c.expirationDate > now + YS_COOKIE_TTL_SEC + 30) {
-            chrome.cookies.set(ysCookieSetParamsFrom(c, YS_COOKIE_TTL_SEC)).catch(() => {});
+        if (typeof c.expirationDate === 'number' && c.expirationDate > now + YS_COOKIE_TTL_SEC_BG + 30) {
+            chrome.cookies.set(ysCookieSetParamsFrom(c, YS_COOKIE_TTL_SEC_BG)).catch(() => {});
         }
     } catch (e) {}
 });
@@ -3392,7 +3392,7 @@ async function deleteYsAuthCookies() {
     try {
         const cookies = await chrome.cookies.getAll({ domain: 'yemeksepeti.com' });
         for (const c of cookies) {
-            if (!YS_AUTH_COOKIE_NAMES.includes(c.name)) continue;
+            if (!YS_AUTH_COOKIE_NAMES_BG.includes(c.name)) continue;
             const host = c.domain.startsWith('.') ? c.domain.substring(1) : c.domain;
             const url = `${c.secure ? 'https' : 'http'}://${host}${c.path || '/'}`;
             try { await chrome.cookies.remove({ url, name: c.name, storeId: c.storeId }); } catch (_) {}
@@ -3413,11 +3413,11 @@ async function maybeCleanupYsAuthCookies() {
 }
 
 // Yemeksepeti sekmesi açıldığında (eklenti aktifken) oturumu geri yükle.
-let ysReinjectInFlight = false;
+let ysReinjectInFlight_BG = false;
 async function reinjectYsAuthCookiesFromSession() {
     if (ysLoginInProgress) return; // yeni giriş temizliği sürerken eski oturumu geri yazma
-    if (ysReinjectInFlight) return;
-    ysReinjectInFlight = true;
+    if (ysReinjectInFlight_BG) return;
+    ysReinjectInFlight_BG = true;
     try {
         const existing = await chrome.cookies.get({ url: 'https://www.yemeksepeti.com', name: 'access_token' });
         if (existing) return; // zaten girişli
@@ -3425,7 +3425,7 @@ async function reinjectYsAuthCookiesFromSession() {
         const sess = st && st.yemekhub_session;
         if (!sess || !sess.isLogged || !sess.isCookieInserted) return;
         const stored = sess && Array.isArray(sess.cookies) ? sess.cookies : [];
-        const authCookies = stored.filter(c => YS_AUTH_COOKIE_NAMES.includes(c.name));
+        const authCookies = stored.filter(c => YS_AUTH_COOKIE_NAMES_BG.includes(c.name));
         if (authCookies.length === 0) return;
         const now = Math.floor(Date.now() / 1000);
         for (const c of authCookies) {
@@ -3441,14 +3441,14 @@ async function reinjectYsAuthCookiesFromSession() {
                     secure: true,
                     httpOnly: false,
                     sameSite: 'no_restriction',
-                    expirationDate: now + YS_COOKIE_TTL_SEC
+                    expirationDate: now + YS_COOKIE_TTL_SEC_BG
                 });
             } catch (_) {}
         }
         console.log('🔓 Yemeksepeti sekmesi açıldı → oturum çerezleri yeniden enjekte edildi (aktif eklenti)');
     } catch (e) {
     } finally {
-        ysReinjectInFlight = false;
+        ysReinjectInFlight_BG = false;
     }
 }
 
