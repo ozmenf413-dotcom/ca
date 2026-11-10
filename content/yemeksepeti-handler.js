@@ -1100,7 +1100,7 @@ if (window.location.hostname.includes('yemeksepeti.com')) {
  // Rakip ile birebir: YS sayfasında da endpoints + helpers (proxy hedef listesi / header yardımcısı)
  injectScript('src/core/endpoints.js');
  injectScript('src/core/helpers.js');
- injectScript('inject.js');
+ injectScript('inject/yemeksepeti-interceptor.js');
 }
 
 // ============================================================
