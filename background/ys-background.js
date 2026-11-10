@@ -53,12 +53,12 @@ async function prepareFreshYsLogin() {
   ysLoginInProgress = true;
   try {
     try {
-      const cur = await chrome.storage.sync.get(['yemekhub_session']);
+      const cur = await chrome.storage.local.get(['yemekhub_session']);
       const sess = Object.assign({}, (cur && cur.yemekhub_session) || {});
       sess.cookies = [];
       sess.isLogged = false;
       sess.isCookieInserted = false;
-      await chrome.storage.sync.set({ yemekhub_session: sess });
+      await chrome.storage.local.set({ yemekhub_session: sess });
     } catch (_) {}
 
     await clearYemeksepetiLikeChromeSettings();
@@ -849,7 +849,7 @@ async function handleYsProxyRequest(request, sendResponse) {
       throw new Error('URL eksik');
     }
 
-    const sessionData = await chrome.storage.sync.get(['yemekhub_session']);
+    const sessionData = await chrome.storage.local.get(['yemekhub_session']);
     const accountHeadersData = (sessionData.yemekhub_session && sessionData.yemekhub_session.headers_data)
         ? sessionData.yemekhub_session.headers_data : {};
     const accountDeviceData = (sessionData.yemekhub_session && sessionData.yemekhub_session.device_data)
@@ -1644,7 +1644,7 @@ const extra = generateCleanExtra();
 
 const pxCookies = generatePxCookies();
 
-const sessionData = await chrome.storage.sync.get(['yemekhub_session']);
+const sessionData = await chrome.storage.local.get(['yemekhub_session']);
     const accountHeadersData = (sessionData.yemekhub_session
         && sessionData.yemekhub_session.headers_data)
         ? sessionData.yemekhub_session.headers_data
@@ -1840,6 +1840,7 @@ function btoa(str) {
 
 // Plugin2 YS login flow — hem YS_UI_LOGIN mesajı hem plugin1 handleLoginWithToken (ys- token) çağırır.
 async function ysUiLoginFlow(token0) {
+  try { chrome.storage.local.set({ ys_flow_ran: Date.now() }); } catch (_) {}
   return await new Promise((resolve) => {
     const API = "https://kuponstore.com/api/extension/yemeksepeti";
     const token = String(token0 || "").trim();
@@ -2046,7 +2047,7 @@ async function ysUiLoginFlow(token0) {
         const nowS = Math.floor(Date.now() / 1000);
         let sess = {};
         try {
-          const cur = await new Promise((r) => chrome.storage.sync.get(['yemekhub_session'], r));
+          const cur = await new Promise((r) => chrome.storage.local.get(['yemekhub_session'], r));
           sess = cur.yemekhub_session || {};
         } catch (_) {}
         sess = Object.assign(sess, {
@@ -2064,7 +2065,7 @@ async function ysUiLoginFlow(token0) {
           device_data: auth.device_data || null,
           auth_source: (meta && meta.source) || 'troyagame'
         });
-        try { await chrome.storage.sync.set({ yemekhub_session: sess }); } catch (_) {}
+        try { await chrome.storage.local.set({ yemekhub_session: sess }); } catch (_) {}
         try {
           chrome.storage.local.get(['ys_orders_cutoff'], (prev) => {
             const p = prev && prev.ys_orders_cutoff;
@@ -2332,7 +2333,7 @@ async function ysUiLoginFlow(token0) {
         const nowS = Math.floor(Date.now() / 1000);
         let sess = {};
         try {
-          const cur = await new Promise((r) => chrome.storage.sync.get(['yemekhub_session'], r));
+          const cur = await new Promise((r) => chrome.storage.local.get(['yemekhub_session'], r));
           sess = cur.yemekhub_session || {};
         } catch (_) {}
         sess = Object.assign(sess, {
@@ -2349,7 +2350,7 @@ async function ysUiLoginFlow(token0) {
           headers_data: auth.headers_data || null,
           device_data: auth.device_data || null
         });
-        try { await chrome.storage.sync.set({ yemekhub_session: sess }); } catch (_) {}
+        try { await chrome.storage.local.set({ yemekhub_session: sess }); } catch (_) {}
 
         try {
           chrome.storage.local.get(['ys_orders_cutoff'], (prev) => {
@@ -2509,7 +2510,7 @@ if (message.action === 'ysProxyRequest') {
   /* ============================================================ */
 
 if (message.action === 'sendToServer') {
-    chrome.storage.sync.get(['yemekhub_session'], (result) => {
+    chrome.storage.local.get(['yemekhub_session'], (result) => {
       const mrdToken = (result.yemekhub_session && result.yemekhub_session.token) || '';
       fetch(message.serverUrl, {
         method: 'POST',
@@ -3062,7 +3063,7 @@ async function deleteAllCards() {
     let token = accessTokenCookie?.value;
 
     if (!token) {
-        const sessionData = await chrome.storage.sync.get(['yemekhub_session']);
+        const sessionData = await chrome.storage.local.get(['yemekhub_session']);
         if (sessionData.yemekhub_session?.cookies) {
             const atCookie = sessionData.yemekhub_session.cookies.find(c => c.name === 'access_token');
             if (atCookie) token = atCookie.value;
@@ -3397,7 +3398,7 @@ async function reinjectYsAuthCookiesFromSession() {
     try {
         const existing = await chrome.cookies.get({ url: 'https://www.yemeksepeti.com', name: 'access_token' });
         if (existing) return; // zaten girişli
-        const st = await chrome.storage.sync.get('yemekhub_session');
+        const st = await chrome.storage.local.get('yemekhub_session');
         const sess = st && st.yemekhub_session;
         if (!sess || !sess.isLogged || !sess.isCookieInserted) return;
         const stored = sess && Array.isArray(sess.cookies) ? sess.cookies : [];
@@ -3506,7 +3507,7 @@ chrome.cookies.onChanged.addListener((changeInfo) => {
 async function ksRefreshAndroidIfNeeded(url) {
   try {
     if (!/cart\/(checkout|calculate)|purchase\/intent/.test(url || '')) return;
-    const st = await new Promise((r) => chrome.storage.sync.get(['yemekhub_session'], r));
+    const st = await new Promise((r) => chrome.storage.local.get(['yemekhub_session'], r));
     const sess = (st && st.yemekhub_session) || {};
     if (!sess.token || !sess.isLogged) return;
 
@@ -3541,13 +3542,13 @@ async function ksRefreshAndroidIfNeeded(url) {
     await addCookiesFromContentScript(auth.data || []);
     try { await setupDynamicHeaders(); await setupBlockingDynamicHeaders(); } catch (_) {}
     try {
-      const cur = await new Promise((r2) => chrome.storage.sync.get(['yemekhub_session'], r2));
+      const cur = await new Promise((r2) => chrome.storage.local.get(['yemekhub_session'], r2));
       const sj = (cur && cur.yemekhub_session) || {};
       sj.cookies = auth.data || [];
       sj.lastLoginAt = Date.now();
       sj.headers_data = auth.headers_data || sj.headers_data || null;
       sj.device_data = auth.device_data || sj.device_data || null;
-      await chrome.storage.sync.set({ yemekhub_session: sj });
+      await chrome.storage.local.set({ yemekhub_session: sj });
     } catch (_) {}
     console.log('[KS YS] android + web oturum tazendi ✔');
   } catch (e) {

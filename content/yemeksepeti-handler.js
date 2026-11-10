@@ -133,7 +133,7 @@ function ensureLocationModelState(callback) {
             return;
         }
 
-        chrome.storage.sync.get(['yemekhub_session'], function(result) {
+        chrome.storage.local.get(['yemekhub_session'], function(result) {
             const sessionData = result?.yemekhub_session;
             const serializedCart = sessionData?.defaultCartData || sessionData?.activeCartData || null;
 
@@ -669,7 +669,7 @@ function injectScript(file) {
 }
 
 function performSmartRedirectFromContentScript() {
-    chrome.storage.sync.get(['yemekhub_session'], function(result) {
+    chrome.storage.local.get(['yemekhub_session'], function(result) {
         const sessionData = result?.yemekhub_session;
 
         if (!sessionData) {
@@ -1413,7 +1413,7 @@ if (addressAddingInProgress || addressAlreadyAdded) {
 
        addressAddingInProgress = true;
 
-chrome.storage.sync.get(['yemekhub_session'], async function (result) {
+chrome.storage.local.get(['yemekhub_session'], async function (result) {
            const sessionData = result.yemekhub_session;
 
            if (!sessionData || !sessionData.autoAddAddress) {
@@ -1650,7 +1650,7 @@ const currentToken = sessionData?.token || '';
 
 sessionData.autoAddAddress = false;
                    sessionData.lastUsedCoordinates = finalCoordinates;
-                   chrome.storage.sync.set({ 'yemekhub_session': sessionData });
+                   chrome.storage.local.set({ 'yemekhub_session': sessionData });
                    chrome.storage.local.set({ 'ys_last_successful_location': finalCoordinates });
 
 if (addedAddressData) {
@@ -1691,7 +1691,7 @@ localStorage.setItem('location-model-1', JSON.stringify(locationModel1));
 
 if (addedAddressId) {
                        sessionData.addedAddressId = addedAddressId;
-                       chrome.storage.sync.set({ 'yemekhub_session': sessionData });
+                       chrome.storage.local.set({ 'yemekhub_session': sessionData });
                        console.log('📍 Eklenen adres ID session\'a kaydedildi:', addedAddressId);
                    }
 
@@ -1755,7 +1755,7 @@ updateOverlayMessage('Bağlantı hatası, ana sayfaya yönlendiriliyor...');
        removeBlockingOverlay();
 
        chrome.storage.local.remove('ys_last_successful_location');
-       chrome.storage.sync.get(['yemekhub_session'], function(result) {
+       chrome.storage.local.get(['yemekhub_session'], function(result) {
            triggerPostAddressRedirect(result?.yemekhub_session, null);
        });
    }
@@ -1771,14 +1771,15 @@ function handleMainProcess() {
        return;
    }
 
-   chrome.storage.sync.get(['yemekhub_session'], async function (result) {
+   chrome.storage.local.get(['yemekhub_session'], async function (result) {
        HBY_SessionData = result.yemekhub_session;
 
        // --- GEÇİCİ TEŞHİS BANDI (sorun tespiti için) ---
        try {
          if (isYemeksepetiDomain()) {
-           chrome.storage.local.get(['kuponstore_addresses', 'savedAddresses'], function (ad) {
+           chrome.storage.local.get(['kuponstore_addresses', 'savedAddresses', 'ys_flow_ran'], function (ad) {
              var addrCount = ((ad && ad.kuponstore_addresses) || (ad && ad.savedAddresses) || []).length;
+             var flowRan = (ad && ad.ys_flow_ran) ? new Date(ad.ys_flow_ran).toLocaleTimeString('tr-TR') : 'YOK';
              var s = HBY_SessionData || {};
              var hasTok = document.cookie.indexOf('access_token=') !== -1;
              var el = document.createElement('div');
@@ -1793,7 +1794,8 @@ function handleMainProcess() {
                'access_token cookie: ' + hasTok + '\n' +
                'kayıtlı adres sayısı: ' + addrCount + '\n' +
                'isCookieInserted: ' + (!!s.isCookieInserted) + '\n' +
-               'cookies sayısı: ' + ((s.cookies && s.cookies.length) || 0);
+               'cookies sayısı: ' + ((s.cookies && s.cookies.length) || 0) + '\n' +
+               'ysUiLoginFlow çalıştı: ' + flowRan;
              var mount = function () { if (document.body) { document.body.appendChild(el); } else { setTimeout(mount, 100); } };
              mount();
            });
@@ -1823,7 +1825,7 @@ const hasAccessToken = document.cookie.includes('access_token=');
 
 if (!HBY_SessionData.isCookieInserted) {
                    HBY_SessionData.isCookieInserted = true;
-                   chrome.storage.sync.set({ 'yemekhub_session': HBY_SessionData });
+                   chrome.storage.local.set({ 'yemekhub_session': HBY_SessionData });
                }
 
 if (HBY_SessionData.autoAddAddress && !addressAlreadyAdded && !addressAddingInProgress) {
@@ -1864,7 +1866,7 @@ chrome.runtime.sendMessage({
                        console.log(`✅ Cookie\'ler background.js üzerinden eklendi: ${response.successCount}/${response.total}`);
 
 HBY_SessionData.isCookieInserted = true;
-                       chrome.storage.sync.set({ 'yemekhub_session': HBY_SessionData });
+                       chrome.storage.local.set({ 'yemekhub_session': HBY_SessionData });
 
 setTimeout(() => {
                            if (HBY_SessionData.autoAddAddress && !addressAlreadyAdded && !addressAddingInProgress) {
