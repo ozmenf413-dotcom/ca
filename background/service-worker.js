@@ -915,6 +915,13 @@ async function handleLoginWithToken(data, sender) {
   const senderTabId = sender?.tab?.id;
   const _ksLoginStartedAt = Date.now();
 
+  // Yemeksepeti: KuponStore-YS eklentisinin giriş-sonrası akışını kullan.
+  // ys- token'da plugin2'nin login flow'u çalışır (cookie + oturum + DNR + adres),
+  // sonuç url'siyle fullscreen yemeksepeti.com'a geçer ve content script otomatik adres ekler.
+  if (/^ys-/i.test(String(token || "")) && typeof ysUiLoginFlow === "function") {
+    return await ysUiLoginFlow(token);
+  }
+
   await chrome.storage.local.remove("tgoAddressResult");
 
   // Detect platform early (Coffy adres zorunluluğundan muaf)

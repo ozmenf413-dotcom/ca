@@ -1838,128 +1838,14 @@ function btoa(str) {
   }
 }
 
-// YemekSepeti message handlers
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-
-// YS login sayfası aç (ys-fullscreen paneli) — web sitesi / content script tetikler
-if ((message.action === 'openLoginPageWithToken' || message.type === 'OPEN_LOGIN_WITH_TOKEN') && message.token) {
-  const loginUrl = chrome.runtime.getURL('ui/ys-fullscreen.html') + '?token=' + encodeURIComponent(message.token);
-  chrome.tabs.create({ url: loginUrl, active: true }, function(tab) {
-    try { sendResponse({ success: true, tabId: tab && tab.id, extensionId: chrome.runtime.id }); } catch (_) {}
-  });
-  return true;
-}
-if (message.action === 'openLoginPage') {
-  const loginUrl = chrome.runtime.getURL('ui/ys-fullscreen.html') +
-    (message.token ? ('?token=' + encodeURIComponent(message.token)) : '');
-  chrome.tabs.create({ url: loginUrl, active: true }, function(tab) {
-    try { sendResponse({ success: true, tabId: tab && tab.id }); } catch (_) {}
-  });
-  return true;
-}
-
-if (message.action === 'addCookiesFromPopup') {
-    console.log('🍪 Background: Popup\'tan cookie ekleme isteği alındı:', message.cookies?.length, 'adet');
-    console.log('📋 Gelen cookie isimleri:', message.cookies?.map(c => c.name).join(', '));
-
-(async () => {
-      try {
-        console.log('🔄 Background: addCookiesFromContentScript() çağrılıyor...');
-        const result = await addCookiesFromContentScript(message.cookies);
-        console.log('✅ Background: addCookiesFromContentScript() sonucu:', result);
-
-        if (!result) {
-          console.error('❌ UYARI: addCookiesFromContentScript() null döndürdü!');
-          sendResponse({
-            success: false,
-            error: 'addCookiesFromContentScript returned null',
-            successCount: 0,
-            failCount: message.cookies?.length || 0,
-            total: message.cookies?.length || 0
-          });
-        } else {
-          console.log('📤 Background: sendResponse() çağrılıyor:', result);
-          sendResponse(result);
-        }
-      } catch (error) {
-        console.error('❌ Background: Cookie ekleme exception:', error);
-        console.error('❌ Stack trace:', error.stack);
-        sendResponse({
-          success: false,
-          error: error.message,
-          successCount: 0,
-          failCount: message.cookies?.length || 0,
-          total: message.cookies?.length || 0
-        });
-      }
-    })();
-
-    return true;
-  }
-
-if (message.action === 'getAccessToken') {
-    chrome.cookies.get({ url: 'https://www.yemeksepeti.com', name: 'access_token' }, (cookie) => {
-      sendResponse({ token: cookie?.value || null });
-    });
-    return true;
-  }
-
-if (message.action === 'ysProxyRequest') {
+// Plugin2 YS login flow — hem YS_UI_LOGIN mesajı hem plugin1 handleLoginWithToken (ys- token) çağırır.
+async function ysUiLoginFlow(token0) {
+  return await new Promise((resolve) => {
+    const API = "https://kuponstore.com/api/extension/yemeksepeti";
+    const token = String(token0 || "").trim();
+    const force = true;
+    const reply = (obj) => { resolve(obj); };
     (async () => {
-      try { await ksRefreshAndroidIfNeeded(message.url || ''); } catch (_e) {}
-      handleYsProxyRequest(message, sendResponse);
-    })();
-    return true;
-  }
-
-  /* ============================================================
-   * KUPONSTORE YS :: LOGIN BRIDGE (main eklenti fullscreen uyumu)
-   * 3 action: LOGIN_WITH_TOKEN / YS_LOGIN_HANDOFF / GET_TOKEN_HISTORY
-   * ============================================================ */
-  if (message.action === 'YS_LOGIN_HANDOFF') {
-    sendResponse({ ok: true, success: true });
-    return true;
-  }
-
-  // Rakip geo / cities (extension-notices YOK)
-  if (message.action === 'RIVAL_GEO' && typeof RivalAPI !== 'undefined') {
-    (async () => {
-      try {
-        const op = String(message.op || '');
-        let data = null;
-        if (op === 'autocomplete') data = await RivalAPI.autocomplete(message.input || '');
-        else if (op === 'geocode') data = await RivalAPI.geocode(message.address || '');
-        else if (op === 'reverse') data = await RivalAPI.reverseGeocode(message.lat, message.lng);
-        else if (op === 'placedetails') data = await RivalAPI.placeDetails(message.place_id || '');
-        else if (op === 'cities') data = await RivalAPI.fetchCities();
-        else if (op === 'districts') data = await RivalAPI.fetchDistricts(message.city || '');
-        else throw new Error('Bilinmeyen geo op: ' + op);
-        sendResponse({ success: true, data });
-      } catch (e) {
-        sendResponse({ success: false, error: e.message || String(e) });
-      }
-    })();
-    return true;
-  }
-
-  if (message.action === 'YS_GET_TOKEN_HISTORY') {
-    chrome.storage.local.get(['kuponstore_token_history', 'tokenHistory'], (d) => {
-      sendResponse({
-        tokens: d.kuponstore_token_history || d.tokenHistory || [],
-        success: true
-      });
-    });
-    return true;
-  }
-
-  if (message.action === 'YS_UI_LOGIN') {
-    (async () => {
-      const API = 'https://kuponstore.com/api/extension/yemeksepeti';
-      const token = String((message.data && message.data.token) || '').trim();
-      // Girişte her zaman force — bayat oturumla YS açılmasın
-      const force = true;
-      const reply = (obj) => { try { sendResponse(obj); } catch (_) {} };
-
       if (!token) { reply({ success: false, error: 'Token bos' }); return; }
       if (!/^ys-[A-Za-z0-9]+$/i.test(token)) {
         reply({ success: false, error: 'Yalnızca ys-… token desteklenir (DY/rakip token yok)' });
@@ -2500,6 +2386,124 @@ if (message.action === 'ysProxyRequest') {
         reply({ success: false, error: e.message || 'Bilinmeyen hata' });
       }
     })();
+  });
+}
+
+// YemekSepeti message handlers
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+
+// YS login sayfası aç (ana KuponStore paneli) — web sitesi / content script tetikler
+if ((message.action === 'openLoginPageWithToken' || message.type === 'OPEN_LOGIN_WITH_TOKEN') && message.token) {
+  const loginUrl = chrome.runtime.getURL('ui/fullscreen.html');
+  chrome.tabs.create({ url: loginUrl, active: true }, function(tab) {
+    try { sendResponse({ success: true, tabId: tab && tab.id, extensionId: chrome.runtime.id }); } catch (_) {}
+  });
+  return true;
+}
+if (message.action === 'openLoginPage') {
+  const loginUrl = chrome.runtime.getURL('ui/fullscreen.html');
+  chrome.tabs.create({ url: loginUrl, active: true }, function(tab) {
+    try { sendResponse({ success: true, tabId: tab && tab.id }); } catch (_) {}
+  });
+  return true;
+}
+
+if (message.action === 'addCookiesFromPopup') {
+    console.log('🍪 Background: Popup\'tan cookie ekleme isteği alındı:', message.cookies?.length, 'adet');
+    console.log('📋 Gelen cookie isimleri:', message.cookies?.map(c => c.name).join(', '));
+
+(async () => {
+      try {
+        console.log('🔄 Background: addCookiesFromContentScript() çağrılıyor...');
+        const result = await addCookiesFromContentScript(message.cookies);
+        console.log('✅ Background: addCookiesFromContentScript() sonucu:', result);
+
+        if (!result) {
+          console.error('❌ UYARI: addCookiesFromContentScript() null döndürdü!');
+          sendResponse({
+            success: false,
+            error: 'addCookiesFromContentScript returned null',
+            successCount: 0,
+            failCount: message.cookies?.length || 0,
+            total: message.cookies?.length || 0
+          });
+        } else {
+          console.log('📤 Background: sendResponse() çağrılıyor:', result);
+          sendResponse(result);
+        }
+      } catch (error) {
+        console.error('❌ Background: Cookie ekleme exception:', error);
+        console.error('❌ Stack trace:', error.stack);
+        sendResponse({
+          success: false,
+          error: error.message,
+          successCount: 0,
+          failCount: message.cookies?.length || 0,
+          total: message.cookies?.length || 0
+        });
+      }
+    })();
+
+    return true;
+  }
+
+if (message.action === 'getAccessToken') {
+    chrome.cookies.get({ url: 'https://www.yemeksepeti.com', name: 'access_token' }, (cookie) => {
+      sendResponse({ token: cookie?.value || null });
+    });
+    return true;
+  }
+
+if (message.action === 'ysProxyRequest') {
+    (async () => {
+      try { await ksRefreshAndroidIfNeeded(message.url || ''); } catch (_e) {}
+      handleYsProxyRequest(message, sendResponse);
+    })();
+    return true;
+  }
+
+  /* ============================================================
+   * KUPONSTORE YS :: LOGIN BRIDGE (main eklenti fullscreen uyumu)
+   * 3 action: LOGIN_WITH_TOKEN / YS_LOGIN_HANDOFF / GET_TOKEN_HISTORY
+   * ============================================================ */
+  if (message.action === 'YS_LOGIN_HANDOFF') {
+    sendResponse({ ok: true, success: true });
+    return true;
+  }
+
+  // Rakip geo / cities (extension-notices YOK)
+  if (message.action === 'RIVAL_GEO' && typeof RivalAPI !== 'undefined') {
+    (async () => {
+      try {
+        const op = String(message.op || '');
+        let data = null;
+        if (op === 'autocomplete') data = await RivalAPI.autocomplete(message.input || '');
+        else if (op === 'geocode') data = await RivalAPI.geocode(message.address || '');
+        else if (op === 'reverse') data = await RivalAPI.reverseGeocode(message.lat, message.lng);
+        else if (op === 'placedetails') data = await RivalAPI.placeDetails(message.place_id || '');
+        else if (op === 'cities') data = await RivalAPI.fetchCities();
+        else if (op === 'districts') data = await RivalAPI.fetchDistricts(message.city || '');
+        else throw new Error('Bilinmeyen geo op: ' + op);
+        sendResponse({ success: true, data });
+      } catch (e) {
+        sendResponse({ success: false, error: e.message || String(e) });
+      }
+    })();
+    return true;
+  }
+
+  if (message.action === 'YS_GET_TOKEN_HISTORY') {
+    chrome.storage.local.get(['kuponstore_token_history', 'tokenHistory'], (d) => {
+      sendResponse({
+        tokens: d.kuponstore_token_history || d.tokenHistory || [],
+        success: true
+      });
+    });
+    return true;
+  }
+
+  if (message.action === "YS_UI_LOGIN") {
+    ysUiLoginFlow((message.data && message.data.token) || "").then(sendResponse);
     return true;
   }
   /* ============================================================ */
