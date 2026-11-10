@@ -1786,6 +1786,12 @@ function handleMainProcess() {
              var bgErr = (ad && ad.ys_bg_error) ? ad.ys_bg_error : 'yok';
              var s = HBY_SessionData || {};
              var hasTok = document.cookie.indexOf('access_token=') !== -1;
+             var rawAddr = ((ad && ad.kuponstore_addresses) || (ad && ad.savedAddresses) || [])[0] || {};
+             var rawKeys = Object.keys(rawAddr).join(',');
+             var nameLike = '';
+             Object.keys(rawAddr).forEach(function (k) {
+               if (/name|ad|soyad|isim|title/i.test(k)) nameLike += k + '=' + String(rawAddr[k]).slice(0, 30) + ' | ';
+             });
              var el = document.createElement('div');
              el.id = 'ks-ys-debug';
              el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#111;color:#0f0;font:12px/1.4 monospace;padding:6px 8px;white-space:pre-wrap;border-bottom:2px solid #0f0';
@@ -1803,7 +1809,9 @@ function handleMainProcess() {
                'ys-background yüklendi: ' + bgLoaded + ' / bitti: ' + bgEnd + '\n' +
                'import denemesi: ' + impAttempt + '\n' +
                'import HATASI: ' + bgErr + '\n' +
-               'ad/soyad: ' + ((s.selectedAddress && (s.selectedAddress.first_name || '?')) + ' ' + (s.selectedAddress && (s.selectedAddress.last_name || '?')));
+               'ad/soyad: ' + ((s.selectedAddress && (s.selectedAddress.first_name || '?')) + ' ' + (s.selectedAddress && (s.selectedAddress.last_name || '?'))) + '\n' +
+               'ADRES ALANLARI: ' + rawKeys + '\n' +
+               'İSİM BENZERİ: ' + (nameLike || 'YOK');
              var mount = function () { if (document.body) { document.body.appendChild(el); } else { setTimeout(mount, 100); } };
              mount();
            });
