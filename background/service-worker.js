@@ -214,7 +214,38 @@ async function checkForUpdates() {
 }
 
 // Message handler from content scripts
+// YemekSepeti mesajları ys-background.js listener'ına bırakılır (çift-handling önlenir).
+const YS_BG_OWNED_ACTIONS = new Set([
+  "RIVAL_GEO",
+  "YS_GET_TOKEN_HISTORY",
+  "YS_LOGIN_HANDOFF",
+  "YS_UI_LOGIN",
+  "addCookiesFromContentScript",
+  "addCookiesFromPopup",
+  "changeTokenAndOpenManager",
+  "clearSiteData",
+  "clearYemeksepetiCompletely",
+  "clearYemeksepetiLikeChromeSettings",
+  "closeYemeksepetiTabs",
+  "deleteAllCards",
+  "getAccessToken",
+  "runDynamicHeaders",
+  "sendToServer",
+  "storeAddressesInStorage",
+  "ysProxyRequest",
+  "openLoginPageWithToken",
+  "openLoginPage",
+]);
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // YS'ye ait action'ları plugin1 işlemez; ys-background.js listener'ı yanıtlar.
+  if (
+    request &&
+    (YS_BG_OWNED_ACTIONS.has(request.action) ||
+      request.type === "OPEN_LOGIN_WITH_TOKEN")
+  ) {
+    return false;
+  }
   handleMessage(request, sender)
     .then(sendResponse)
     .catch((error) => {

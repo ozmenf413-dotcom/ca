@@ -265,6 +265,17 @@ async function handleLogin() {
     return;
   }
 
+  // Yemeksepeti: özel YS paneline yönlendir (otomatik adres + tema akışı)
+  if (/^ys-/i.test(token)) {
+    try {
+      const url = chrome.runtime.getURL('ui/ys-fullscreen.html') + '?token=' + encodeURIComponent(token);
+      window.location.href = url;
+    } catch (_) {
+      window.location.href = 'ys-fullscreen.html?token=' + encodeURIComponent(token);
+    }
+    return;
+  }
+
   const platformInfo = detectTokenPlatform(token);
   const isCoffy = !!(platformInfo && (platformInfo.prefix === 'cof-' || platformInfo.prefix === 'coffy-'));
 

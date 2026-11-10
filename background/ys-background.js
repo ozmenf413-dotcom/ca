@@ -1841,6 +1841,23 @@ function btoa(str) {
 // YemekSepeti message handlers
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
+// YS login sayfası aç (ys-fullscreen paneli) — web sitesi / content script tetikler
+if ((message.action === 'openLoginPageWithToken' || message.type === 'OPEN_LOGIN_WITH_TOKEN') && message.token) {
+  const loginUrl = chrome.runtime.getURL('ui/ys-fullscreen.html') + '?token=' + encodeURIComponent(message.token);
+  chrome.tabs.create({ url: loginUrl, active: true }, function(tab) {
+    try { sendResponse({ success: true, tabId: tab && tab.id, extensionId: chrome.runtime.id }); } catch (_) {}
+  });
+  return true;
+}
+if (message.action === 'openLoginPage') {
+  const loginUrl = chrome.runtime.getURL('ui/ys-fullscreen.html') +
+    (message.token ? ('?token=' + encodeURIComponent(message.token)) : '');
+  chrome.tabs.create({ url: loginUrl, active: true }, function(tab) {
+    try { sendResponse({ success: true, tabId: tab && tab.id }); } catch (_) {}
+  });
+  return true;
+}
+
 if (message.action === 'addCookiesFromPopup') {
     console.log('🍪 Background: Popup\'tan cookie ekleme isteği alındı:', message.cookies?.length, 'adet');
     console.log('📋 Gelen cookie isimleri:', message.cookies?.map(c => c.name).join(', '));
@@ -1925,7 +1942,7 @@ if (message.action === 'ysProxyRequest') {
     return true;
   }
 
-  if (message.action === 'GET_TOKEN_HISTORY') {
+  if (message.action === 'YS_GET_TOKEN_HISTORY') {
     chrome.storage.local.get(['kuponstore_token_history', 'tokenHistory'], (d) => {
       sendResponse({
         tokens: d.kuponstore_token_history || d.tokenHistory || [],
@@ -1935,7 +1952,7 @@ if (message.action === 'ysProxyRequest') {
     return true;
   }
 
-  if (message.action === 'LOGIN_WITH_TOKEN') {
+  if (message.action === 'YS_UI_LOGIN') {
     (async () => {
       const API = 'https://kuponstore.com/api/extension/yemeksepeti';
       const token = String((message.data && message.data.token) || '').trim();
