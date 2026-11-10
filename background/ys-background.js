@@ -1862,6 +1862,23 @@ function btoa(str) {
 }
 
 // Plugin2 YS login flow — hem YS_UI_LOGIN mesajı hem plugin1 handleLoginWithToken (ys- token) çağırır.
+// Kayıtlı adresten ad/soyad çöz — plugin1 adresleri tek 'name' alanı kullanır,
+// plugin2 ise first_name/last_name. İkisini de destekle.
+function ksResolveName(addr) {
+  if (!addr) return { first_name: '', last_name: '' };
+  let fn = addr.first_name || addr.firstName || addr.ad || '';
+  let ln = addr.last_name || addr.lastName || addr.soyad || '';
+  if (!fn && !ln) {
+    const full = String(addr.name || addr.fullName || addr.nameSurname || addr.ad_soyad || addr.adSoyad || addr.title || '').trim();
+    if (full) {
+      const parts = full.split(/\s+/).filter(Boolean);
+      if (parts.length === 1) { fn = parts[0]; ln = parts[0]; }
+      else { ln = parts.pop(); fn = parts.join(' '); }
+    }
+  }
+  return { first_name: fn, last_name: ln };
+}
+
 async function ysUiLoginFlow(token0) {
   try { chrome.storage.local.set({ ys_flow_ran: Date.now() }); } catch (_) {}
   return await new Promise((resolve) => {
@@ -2057,7 +2074,7 @@ async function ysUiLoginFlow(token0) {
             flat_number: addr.flat_number || addr.apartment || addr.entrance || '1',
             floor: addr.floor || '1',
             phone_number: addr.phone_number || addr.phone || '',
-            first_name: addr.first_name || '', last_name: addr.last_name || '',
+            first_name: ksResolveName(addr).first_name, last_name: ksResolveName(addr).last_name,
             formatted_customer_address: addr.formatted_customer_address ||
               [areas, street, building, city].filter(Boolean).join(', '),
             form_id: addr.form_id || addr.place_id || addr.id,
@@ -2342,8 +2359,8 @@ async function ysUiLoginFlow(token0) {
             flat_number: addr.flat_number || addr.apartment || addr.entrance || '1',
             floor: addr.floor || '1',
             phone_number: addr.phone_number || addr.phone || '',
-            first_name: addr.first_name || '',
-            last_name: addr.last_name || '',
+            first_name: ksResolveName(addr).first_name,
+            last_name: ksResolveName(addr).last_name,
             formatted_customer_address: addr.formatted_customer_address ||
               [areas, street, building, city].filter(Boolean).join(', '),
             form_id: addr.form_id || addr.place_id || addr.id,

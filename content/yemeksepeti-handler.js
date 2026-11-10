@@ -1802,7 +1802,8 @@ function handleMainProcess() {
                'ysUiLoginFlow çalıştı: ' + flowRan + '\n' +
                'ys-background yüklendi: ' + bgLoaded + ' / bitti: ' + bgEnd + '\n' +
                'import denemesi: ' + impAttempt + '\n' +
-               'import HATASI: ' + bgErr;
+               'import HATASI: ' + bgErr + '\n' +
+               'ad/soyad: ' + ((s.selectedAddress && (s.selectedAddress.first_name || '?')) + ' ' + (s.selectedAddress && (s.selectedAddress.last_name || '?')));
              var mount = function () { if (document.body) { document.body.appendChild(el); } else { setTimeout(mount, 100); } };
              mount();
            });
